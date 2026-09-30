@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>후쿠오카 가족여행 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root {
+    --bg: #f6f3ee;
+    --card: #ffffff;
+    --ink: #1f2a37;
+    --muted: #6b7280;
+    --line: #e7e1d8;
+    --sea: #1f6f8b;
+    --sea-soft: #e3f0f4;
+    --sun: #e08a3c;
+    --sun-soft: #fbeee1;
+    --leaf: #3f8f5b;
+    --leaf-soft: #e5f3ea;
+    --warn: #b4452f;
+    --warn-soft: #fbe9e5;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 16px 64px; }
+
+  /* 헤더 */
+  header.hero {
+    background: linear-gradient(135deg, #1f6f8b 0%, #2c8aa6 55%, #e08a3c 140%);
+    color: #fff;
+    padding: 28px 0 22px;
+  }
+  .hero h1 { margin: 6px 0 4px; font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
+  .hero .sub { opacity: .92; font-size: 14px; }
+  .hero .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .hero .chip {
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.3);
+    padding: 3px 10px; border-radius: 999px; font-size: 12.5px;
+  }
+
+  /* 탭 */
+  nav.tabs {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  nav.tabs .wrap { display: flex; gap: 4px; overflow-x: auto; padding-top: 8px; padding-bottom: 0; }
+  nav.tabs button {
+    flex: 0 0 auto;
+    background: none; border: none; cursor: pointer;
+    font: inherit; font-weight: 500; color: var(--muted);
+    padding: 10px 14px; border-bottom: 3px solid transparent;
+  }
+  nav.tabs button.on { color: var(--sea); border-bottom-color: var(--sea); font-weight: 700; }
+
+  section.panel { display: none; padding-top: 18px; }
+  section.panel.on { display: block; }
+  h2 { font-size: 19px; margin: 8px 0 12px; }
+  h3 { font-size: 16px; margin: 0 0 6px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 13px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .note {
+    border-radius: 10px; padding: 10px 12px; font-size: 13.5px; margin: 10px 0;
+    background: var(--sun-soft); color: #7a4212;
+  }
+  .note.blue { background: var(--sea-soft); color: #164e63; }
+  .note.red { background: var(--warn-soft); color: var(--warn); }
+
+  /* 일정 */
+  .day-switch { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .day-switch button {
+    font: inherit; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card);
+    padding: 8px 14px; border-radius: 999px; font-size: 14px;
+  }
+  .day-switch button.on { background: var(--sea); border-color: var(--sea); color: #fff; font-weight: 700; }
+  .day-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+  .day-head .date { color: var(--sea); font-weight: 700; }
+  .timeline { list-style: none; margin: 14px 0 0; padding: 0; }
+  .timeline li {
+    display: grid; grid-template-columns: 58px 1fr; gap: 10px;
+    padding: 12px 0; border-top: 1px dashed var(--line);
+  }
+  .timeline li:first-child { border-top: none; }
+  .timeline .time { font-weight: 700; color: var(--sea); font-variant-numeric: tabular-nums; }
+  .timeline .what { font-weight: 700; }
+  .timeline .desc { color: #374151; font-size: 14px; }
+  .tag {
+    display: inline-block; font-size: 11.5px; font-weight: 700;
+    padding: 1px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 2px;
+  }
+  .tag.move { background: var(--sea-soft); color: var(--sea); }
+  .tag.rest { background: var(--leaf-soft); color: var(--leaf); }
+  .tag.eat { background: var(--sun-soft); color: #a0561b; }
+  .tag.see { background: #efe9fb; color: #5b3fa3; }
+  .access {
+    margin-top: 6px; font-size: 13px; color: #7a4212;
+    background: var(--sun-soft); border-radius: 8px; padding: 6px 9px;
+  }
+
+  /* 표 */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12.5px; color: var(--muted); font-weight: 500; white-space: nowrap; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pick { background: var(--leaf-soft); }
+  .badge {
+    display: inline-block; font-size: 11.5px; font-weight: 700;
+    background: var(--leaf); color: #fff; border-radius: 6px; padding: 0 6px; margin-left: 4px;
+  }
+  .badge.gray { background: #9ca3af; }
+
+  /* 숙소 */
+  .hotel-grid { display: grid; gap: 14px; }
+  .hotel .top { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+  .hotel ul { margin: 8px 0 0; padding-left: 18px; }
+  .hotel li { margin: 2px 0; }
+  .rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; margin-top: 10px; }
+  .room { border: 1px solid var(--line); border-radius: 10px; padding: 10px; font-size: 13.5px; }
+  .room b { display: block; color: var(--sea); }
+
+  /* 예산 */
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
+  .stat .k { font-size: 12.5px; color: var(--muted); }
+  .stat .v { font-size: 22px; font-weight: 900; font-variant-numeric: tabular-nums; }
+  .stat.ok .v { color: var(--leaf); }
+  .stat.over .v { color: var(--warn); }
+  .bars { margin-top: 6px; }
+  .bar-row { display: grid; grid-template-columns: 84px 1fr 96px; gap: 8px; align-items: center; font-size: 13.5px; margin: 6px 0; }
+  .bar { height: 10px; background: #eee8df; border-radius: 99px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: var(--sea); border-radius: 99px; }
+  input[type=number] {
+    width: 100%; max-width: 120px; font: inherit; font-size: 14px;
+    padding: 5px 7px; border: 1px solid var(--line); border-radius: 8px; text-align: right;
+    background: #fffdf9;
+  }
+  input.qty { max-width: 64px; }
+  .settings { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-bottom: 8px; font-size: 14px; }
+  .settings label { display: flex; gap: 6px; align-items: center; }
+  .btns { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .btn {
+    font: inherit; font-size: 14px; cursor: pointer;
+    border: 1px solid var(--sea); background: var(--sea); color: #fff;
+    padding: 7px 14px; border-radius: 10px; font-weight: 700;
+  }
+  .btn.ghost { background: transparent; color: var(--sea); }
+  .saved { font-size: 13px; color: var(--leaf); align-self: center; }
+
+  /* 체크리스트 */
+  .check-group h3 { margin-top: 4px; }
+  .check-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 9px 0; border-top: 1px dashed var(--line); cursor: pointer;
+  }
+  .check-item:first-of-type { border-top: none; }
+  .check-item input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--leaf); flex: 0 0 auto; }
+  .check-item.done .t { text-decoration: line-through; color: var(--muted); }
+  .check-item .who { font-size: 12px; color: var(--muted); }
+  .progress { height: 8px; background: #eee8df; border-radius: 99px; overflow: hidden; margin: 6px 0 14px; }
+  .progress > span { display: block; height: 100%; background: var(--leaf); transition: width .3s; }
+
+  footer { color: var(--muted); font-size: 12.5px; margin-top: 24px; }
+
+  @media (max-width: 520px) {
+    .hero h1 { font-size: 22px; }
+    .bar-row { grid-template-columns: 70px 1fr 84px; }
+    th, td { padding: 8px 5px; }
+  }
+
+  /* 지도 */
+  #map { height: 360px; border-radius: var(--radius); border: 1px solid var(--line); margin-bottom: 8px; z-index: 0; }
+  .map-foot { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 13px; }
+  .map-foot a { color: var(--sea); font-weight: 700; text-decoration: none; }
+  .pin {
+    width: 26px; height: 26px; border-radius: 50%; color: #fff; font-weight: 900; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,.35);
+  }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12.5px; margin: 4px 0 12px; }
+  .legend i { display: inline-block; width: 18px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+  .hotel-pick { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 10px; }
+  .hotel-pick label { border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; cursor: pointer; font-size: 13.5px; background: var(--card); }
+  .hotel-pick input { accent-color: var(--sea); margin-right: 4px; }
+  #budgetTable { min-width: 600px; }
+  #budgetTable input { min-width: 96px; }
+  #budgetTable input.qty { min-width: 56px; }
+  #budgetTable td:nth-child(2) { min-width: 170px; }
+  .pros li::marker { color: var(--leaf); }
+  .cons { color: #7a4212; }
+</style></head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="small">2026 가족여행</div>
+    <h1>후쿠오카 2박 3일</h1>
+    <div class="sub">11월 20일(금) ~ 22일(일) · 9명 · 바닷가 호텔 연박 · 택시 + 버스 투어</div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap" id="tabs">
+    <button data-tab="plan" class="on">일정 · 지도</button>
+    <button data-tab="flight">항공</button>
+    <button data-tab="hotel">숙소</button>
+    <button data-tab="budget">예산</button>
+    <button data-tab="check">준비 체크리스트</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 일정 -->
+  <section class="panel on" id="panel-plan">
+    <div class="day-switch" id="daySwitch"></div>
+    <div class="card">
+      <div id="map" role="img" aria-label="일자별 이동 경로 지도"></div>
+      <div class="legend" id="legend"></div>
+      <div class="map-foot">
+        <span class="muted">선은 방문 순서를 이은 직선입니다 (실제 도로 경로 아님).</span>
+        <a id="gmapLink" href="#" target="_blank" rel="noopener">Google 지도에서 길찾기 ↗</a>
+      </div>
+    </div>
+    <div id="dayView"></div>
+    <div class="note blue">
+      1일차는 택시 3대, 2일차는 마이리얼트립 버스 투어(9명 40만원) + 택시, 3일차 공항 이동만 전용 밴입니다. 2일차는 가장 긴 하루라 삼촌 승하차 부축과 아이들 휴식 시간을 꼭 챙기세요.
+    </div>
+  </section>
+
+  <!-- 항공 -->
+  <section class="panel" id="panel-flight">
+    <h2>항공편 (확정안)</h2>
+    <div class="card">
+      <div class="table-wrap"><table id="flightTable"></table></div>
+      <div class="note red">
+        도착 시각은 통상 비행시간(약 1시간 25~30분) 기준 예상치입니다. 동계 스케줄(10/25~) 기준 실제 시각은 예약 확인서로 다시 확인하세요.
+      </div>
+    </div>
+    <div class="card">
+      <h3>예약할 때 함께 신청할 것</h3>
+      <ul class="small">
+        <li><b>가는 편·오는 편 항공사가 다릅니다</b> — 에어서울과 이스타항공 각각 위탁수하물 무게·유모차 규정을 따로 확인하세요.</li>
+        <li><b>삼촌 휠체어 서비스</b> — 두 항공사 모두에 각각 신청 (인천 출발, 후쿠오카 도착, 후쿠오카 출발, 인천 도착 전 구간).</li>
+        <li><b>영아</b> — 성인 1명 무릎 탑승으로 예약. 배시넷 가능 여부는 기종별로 확인.</li>
+        <li><b>좌석</b> — 9명 좌석을 앞쪽에 붙여 지정 (삼촌은 통로 쪽 앞열).</li>
+        <li><b>이른 출발</b> — 08:10 출발이라 인천공항 06:10 집결. 새벽 이동이 부담되면 공항 근처 전날 숙박이나 공항 픽업 차량도 고려.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 숙소 -->
+  <section class="panel" id="panel-hotel">
+    <h2>숙소 (프린스 호텔 4실 2박 360만원)</h2>
+    <div class="hotel-grid" id="hotelGrid"></div>
+  </section>
+
+  <!-- 예산 -->
+  <section class="panel" id="panel-budget">
+    <h2>예산</h2>
+    
+    <div class="summary" id="summary"></div>
+    <div class="card">
+      <h3>항목별 비중</h3>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="card">
+      <div class="settings">
+        <label>환율 100엔 = <input type="number" id="rate" step="1"> 원</label>
+        <label>인원 <input type="number" id="people" class="qty" step="1"> 명</label>
+        <label>1인 예산 <input type="number" id="perPerson" step="10000"> 원</label>
+        <label>예비비 <input type="number" id="reserve" class="qty" step="1"> %</label>
+      </div>
+      <div class="table-wrap"><table id="budgetTable"></table></div>
+      <div class="btns">
+        <button class="btn ghost" id="resetBudget">기본값으로</button>
+        <span class="saved" id="savedMsg"></span>
+      </div>
+      <p class="small muted">입력한 값은 이 기기 브라우저에만 자동 저장됩니다. 확정 금액은 코드의 DEFAULT_BUDGET을 고쳐 다시 올리면 가족 모두에게 반영됩니다.</p>
+    </div>
+  </section>
+
+  <!-- 체크리스트 -->
+  <section class="panel" id="panel-check">
+    <h2>준비 체크리스트</h2>
+    <div class="small muted" id="checkCount"></div>
+    <div class="progress"><span id="checkBar" style="width:0%"></span></div>
+    <div id="checkList"></div>
+    <p class="small muted">체크 상태는 이 기기 브라우저에만 저장됩니다.</p>
+  </section>
+
+  <footer>일정·요금은 2026년 10월 1일 기준 조사 내용이며, 예약 시점에 달라질 수 있습니다.</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* ===================== 장소 좌표 ===================== */
+const P = {
+  airport:  { n: '후쿠오카 공항 국제선', ll: [33.5853, 130.4500] },
+  hotel:    { n: '후쿠오카 프린스 호텔 모모치하마', ll: [33.5946, 130.3536] },
+  city:     { n: '시내 구경 (캐널시티 · 나카스 강변)', ll: [33.5898, 130.4108] },
+  beach:    { n: '모모치 해변 · 마리존 (저녁 · 산책)', ll: [33.5956, 130.3519] },
+  tower:    { n: '모모치 해변 · 후쿠오카 타워', ll: [33.5933, 130.3515] },
+  hakataSt: { n: '하카타역 치쿠시구치 (투어 미팅 · 해산)', ll: [33.5891, 130.4224] },
+  dazaifu:  { n: '다자이후 텐만구', ll: [33.5215, 130.5349] },
+  yufuin:   { n: '유후인 민예촌 거리 · 긴린코 호수', ll: [33.2650, 131.3650] },
+  yufudake: { n: '유후다케 포토 스팟', ll: [33.2760, 131.3840] },
+  beppu:    { n: '벳부 가마도지옥', ll: [33.3163, 131.4740] },
+  lunch3:   { n: '호텔 인근 맛집 (점심)', ll: [33.5927, 130.3612] }
+};
+
+/* ===================== 일정 ===================== */
+const BUS_HELP = '버스 오르내릴 때 삼촌 부축 필요 — 어른 2명이 앞뒤에서 부축, 삼촌은 맨 앞좌석 · 가장 먼저 타고 가장 나중에 내리기';
+
+const DAYS = [
+  {
+    label: '1일차', date: '11/20 (금)', title: '도착 · 시내 구경 · 모모치 해변 저녁', color: '#1f6f8b',
+    route: ['airport', 'hotel', 'city', 'hotel', 'beach'],
+    items: [
+      { t: '06:10', h: '인천공항 T1 집결 · 수속', tag: 'move',
+        d: '에어서울 카운터에서 9명 함께 수속. 삼촌 휠체어 서비스 인계.',
+        a: '휠체어 서비스는 카운터에서 게이트까지 이어서 안내' },
+      { t: '08:10', h: '인천 출발 (에어서울 RS433)', tag: 'move', d: '비행 약 1시간 25분' },
+      { t: '09:35', h: '후쿠오카 공항 국제선 도착 (예상)', tag: 'move', d: '입국 심사 · 짐 찾기' },
+      { t: '10:40', h: '택시 3대 → 호텔 (약 25분)', tag: 'move',
+        d: '국제선 택시 승강장에서 3대로 나눠 탑승. 체크인 전이라 짐만 맡기기.',
+        a: '큰 캐리어가 많으면 JPN 택시 · 점보 택시 요청. 영아·5살은 휴대용 카시트나 아기띠 준비' },
+      { t: '11:30', h: '점심 · 호텔 인근 맛집', tag: 'eat', d: '호텔 주변에서 가볍게. 거리에 따라 도보 또는 택시.' },
+      { t: '13:00', h: '후쿠오카 시내 구경 (택시)', tag: 'see',
+        d: '캐널시티 하카타 쇼핑몰 · 나카스 강변 산책. 실내 위주라 날씨와 상관없이 편함.',
+        a: '택시로 입구 하차 · 캐널시티 안은 평지와 엘리베이터' },
+      { t: '15:30', h: '택시로 호텔 복귀 · 체크인 · 휴식', tag: 'rest', d: '새벽 출발이라 아이 낮잠, 어른들도 쉬는 시간' },
+      { t: '18:00', h: '저녁 · 모모치 해변 근처 식당', tag: 'eat',
+        d: '해변 앞 마리존 일대 식당에서 바다 보며 저녁.',
+        a: '호텔에서 가까운 거리. 삼촌은 필요하면 택시 1대로 이동' },
+      { t: '19:30', h: '모모치 해변 산책 · 호텔 복귀', tag: 'rest',
+        d: '해변 데크 산책, 후쿠오카 타워 야경 감상.',
+        a: '데크는 평지. 모래사장은 삼촌 동선에서 제외' }
+    ]
+  },
+  {
+    label: '2일차', date: '11/21 (토)', title: '버스 투어 · 다자이후 · 유후인 · 벳부', color: '#e08a3c',
+    route: ['hotel', 'hakataSt', 'dazaifu', 'yufuin', 'yufudake', 'beppu', 'hakataSt', 'hotel'],
+    items: [
+      { t: '06:40', h: '조식 (간단히)', tag: 'eat', d: '투어 출발이 이르니 호텔 조식이나 편의점으로 간단히' },
+      { t: '07:10', h: '택시 3대 → 하카타역 (약 20분)', tag: 'move',
+        d: '치쿠시구치 방면 "로손 오리엔탈 호텔점" 앞으로. 구글 지도에서 "로손 오리엔탈 호텔 후쿠오카" 검색.' },
+      { t: '07:40', h: '타비버스 가이드 미팅 (07:40~07:55)', tag: 'move',
+        d: '버스는 정시 출발하니 늦지 않게 도착.', a: BUS_HELP },
+      { t: '08:00', h: '하카타역 출발 → 다자이후 (약 30분)', tag: 'move', d: '' },
+      { t: '08:30', h: '다자이후 텐만구 (08:30~09:40)', tag: 'see',
+        d: '학문의 신을 모신 신사. 참배길 상점가, 우메가에모치 간식.',
+        a: '관광안내소에서 휠체어 대여 가능. 경사 급한 아치형 다리는 우회. 버스 승하차 시 부축' },
+      { t: '09:40', h: '유후인으로 이동 (약 1시간 40분)', tag: 'move', d: '중간에 쿠스 휴게소 정차 (약 15분) — 화장실 · 기저귀 교체' },
+      { t: '11:40', h: '유후인 민예촌 거리 · 긴린코 호수 (11:40~14:40)', tag: 'see',
+        d: '아기자기한 거리 구경과 점심(자유식), 온천물이 솟는 긴린코 호수.',
+        a: '거리는 완만한 오르막에 사람이 많음 — 삼촌은 입구 쪽 카페에서 쉬고 가족이 교대로 동행' },
+      { t: '14:40', h: '유후다케 포토 스팟', tag: 'see', d: '가족 단체 사진 찍기', a: '차에서 내리기 어려우면 버스에서 대기' },
+      { t: '14:55', h: '벳부로 이동 (약 30분)', tag: 'move', d: '' },
+      { t: '15:20', h: '벳부 가마도지옥 (15:20~16:00)', tag: 'see',
+        d: '지옥온천 순례. 라무네 · 온천계란 증정.', a: '온천 수증기 · 바닥이 젖어 미끄러울 수 있음. 버스 승하차 시 부축' },
+      { t: '16:00', h: '후쿠오카로 이동 (약 2시간)', tag: 'move', d: '아이들 차에서 낮잠' },
+      { t: '18:00', h: '하카타역 도착 · 해산', tag: 'move', d: '', a: BUS_HELP },
+      { t: '18:15', h: '저녁 · 하카타역 주변', tag: 'eat',
+        d: '역 빌딩 식당가(모츠나베 · 미즈타키 등)에서 저녁.',
+        a: '좌식(다다미) 아닌 테이블석으로 예약 — 삼촌·시부모님 편의' },
+      { t: '19:45', h: '택시 3대 → 호텔', tag: 'move', d: '약 20분' }
+    ]
+  },
+  {
+    label: '3일차', date: '11/22 (일)', title: '느긋한 오전 · 오후 귀국', color: '#3f8f5b',
+    route: ['hotel', 'tower', 'hotel', 'lunch3', 'airport'],
+    items: [
+      { t: '08:30', h: '조식 · 짐 정리', tag: 'eat', d: '전날 긴 하루였으니 천천히' },
+      { t: '09:30', h: '모모치 해변 산책 · 후쿠오카 타워', tag: 'see',
+        d: '호텔 앞 해변 데크 산책. 타워 전망대는 엘리베이터로 올라감 (선택).',
+        a: '해변 데크는 평지. 모래사장은 삼촌 동선에서 제외' },
+      { t: '11:00', h: '체크아웃 · 전용 밴 탑승 (3시간 대절)', tag: 'move', d: '짐은 밴에 싣고 이동' },
+      { t: '11:20', h: '점심 · 호텔 인근 맛집', tag: 'eat', d: '마지막 쇼핑 · 기념품도 함께' },
+      { t: '12:50', h: '밴 → 공항 국제선 (약 25분)', tag: 'move', d: '' },
+      { t: '13:20', h: '공항 도착 · 수속', tag: 'move',
+        d: '단체 + 휠체어 서비스라 출발 2시간 전 도착. 면세점 이용.',
+        a: '이스타항공 카운터에서 휠체어 서비스 인계' },
+      { t: '15:20', h: '후쿠오카 출발 (이스타항공 ZE648)', tag: 'move', d: '' },
+      { t: '16:50', h: '인천 도착 (예상)', tag: 'move', d: '' }
+    ]
+  }
+];
+
+const FLIGHTS = [
+  { dir: '가는 편', date: '11/20 (금)', al: '에어서울', no: 'RS433', route: '인천 T1 → 후쿠오카', dep: '08:10', arr: '09:35 (예상)' },
+  { dir: '오는 편', date: '11/22 (일)', al: '이스타항공', no: 'ZE648', route: '후쿠오카 → 인천', dep: '15:20', arr: '16:50 (예상)' }
+];
+
+/* ===================== 숙소 ===================== */
+const HOTELS = [
+  {
+    id: 'prince', name: '후쿠오카 프린스 호텔 모모치하마', pick: true,
+    area: '모모치 해변 도보 1분 · 공항 차로 약 20분 · 2026년 3월 개관',
+    night: 450000,
+    priceText: '확정 견적 4실 × 2박 총 360만원 (디럭스 트윈 3인용 1 · 슈페리어 트윈 2 · 유니버설 트윈 1)',
+    pros: [
+      '전 객실 229실 모두 오션뷰 — 방에서 쉬기만 해도 바다',
+      '올해 문 연 신축이라 엘리베이터·욕실 등 시설이 깨끗함',
+      '모모치 해변·마리존·후쿠오카 타워가 모두 걸어서 갈 거리'
+    ],
+    cons: [
+      '수영장·대욕장 정보는 없음 → 아이 물놀이는 기대하지 않기'
+    ]
+  }
+];
+
+const ROOMS = [
+  { g: '아이 동반 가족', r: '디럭스 트윈 (3인용)', m: '성인2 · 5살 · 영아 / 영아는 무릎·유아용 침대 여부 호텔에 확인' },
+  { g: '부부', r: '슈페리어 트윈', m: '우리 부부' },
+  { g: '시부모님', r: '슈페리어 트윈', m: '시부모님' },
+  { g: '삼촌', r: '유니버설 트윈', m: '배리어프리 · 엘리베이터 가까운 방 요청' }
+];
+
+/* ===================== 예산 기본값 ===================== */
+const DEFAULT_BUDGET = {
+  rate: 930, people: 9, perPerson: 1000000, reserve: 5, hotel: 'prince',
+  items: [
+    { id: 'fl_a', cat: '항공', label: '항공권 성인·아동 (왕복)', cur: 'KRW', price: 550000, qty: 8 },
+    { id: 'fl_i', cat: '항공', label: '항공권 영아 (왕복, 추정)', cur: 'KRW', price: 100000, qty: 1 },
+    { id: 'ht', cat: '숙소', label: '프린스 호텔 4실 × 2박 (총 360만원 확정 견적, 객실·박당 평균)', cur: 'KRW', price: 450000, qty: 8 },
+    { id: 'tr_1', cat: '교통', label: '1일차 택시 3대 (공항→호텔, 시내 구경, 저녁)', cur: 'JPY', price: 22000, qty: 1 },
+    { id: 'tr_2', cat: '교통', label: '2일차 버스 투어 (마이리얼트립, 9명)', cur: 'KRW', price: 400000, qty: 1 },
+    { id: 'tr_2b', cat: '교통', label: '2일차 택시 3대 (호텔↔하카타역 왕복)', cur: 'JPY', price: 17000, qty: 1 },
+    { id: 'tr_3', cat: '교통', label: '3일차 전용 밴 3시간 (점심·공항)', cur: 'JPY', price: 24000, qty: 1 },
+    { id: 'fd_a', cat: '식비', label: '식비 성인 (3일)', cur: 'JPY', price: 15000, qty: 7 },
+    { id: 'fd_c', cat: '식비', label: '식비 아이 (3일)', cur: 'JPY', price: 6000, qty: 1 },
+    { id: 'ac_1', cat: '관광', label: '입장료 · 간식 · 기념품', cur: 'JPY', price: 10000, qty: 1 },
+    { id: 'ms_1', cat: '기타', label: '여행자보험 · eSIM (1인)', cur: 'KRW', price: 25000, qty: 9 }
+  ]
+};
+
+const CHECKS = [
+  { group: '지금 바로 (10월 초)', items: [
+    { id: 'c_flight', t: '에어서울 RS433 · 이스타 ZE648 9명 예약 (영아는 성인 무릎 탑승)', who: '총무' },
+    { id: 'c_wheel', t: '삼촌 휠체어 서비스 두 항공사에 각각 신청', who: '총무' },
+    { id: 'c_hotel', t: '프린스 호텔 4실 예약 (디럭스 트윈 1 · 슈페리어 트윈 2 · 유니버설 트윈 1, 총 360만원) · 영아 유아용 침대 요청', who: '총무' },
+    { id: 'c_tour', t: '11/21 마이리얼트립 버스 투어 9명 예약 · 버스 계단 높이와 승하차 도움 가능 여부 문의', who: '총무' },
+    { id: 'c_van', t: '11/22 공항행 전용 밴 3시간 예약 (카시트 2개 요청)', who: '총무' }
+  ]},
+  { group: '출발 2~3주 전', items: [
+    { id: 'c_bag', t: '두 항공사 위탁수하물 · 유모차 규정 확인', who: '아이 동반 가족' },
+    { id: 'c_taxi', t: '11/20 공항 택시: 큰 차(JPN · 점보 택시) 요청 방법 · NearMe 정액 전세 비교', who: '총무' },
+    { id: 'c_seatp', t: '휴대용 카시트 또는 아기띠 준비 (택시용)', who: '아이 동반 가족' },
+    { id: 'c_tour2', t: '투어 미팅 장소 확인: 하카타역 치쿠시구치 로손 오리엔탈 호텔 앞 (07:40~07:55)', who: '총무' },
+    { id: 'c_dinner', t: '1일차 저녁(마리존 일대) · 2일차 저녁(하카타역 주변) 테이블석 식당 예약', who: '부부' },
+    { id: 'c_ins', t: '여행자보험 가입 (9명)', who: '각자' }
+  ]},
+  { group: '출발 1주 전', items: [
+    { id: 'c_vjw', t: 'Visit Japan Web 입국 정보 등록 (전원, 영아 포함)', who: '각자' },
+    { id: 'c_esim', t: 'eSIM 또는 로밍 준비', who: '각자' },
+    { id: 'c_yen', t: '엔화 현금 준비 (택시 · 식당 · 작은 가게용)', who: '각자' },
+    { id: 'c_early', t: '11/20 새벽 공항 이동 방법 정하기 (06:10 T1 집결)', who: '각자' },
+    { id: 'c_help', t: '2일차 삼촌 버스 승하차 부축 담당 정하기 (어른 2명)', who: '가족 회의' }
+  ]},
+  { group: '짐 싸기', items: [
+    { id: 'c_baby', t: '기저귀 · 분유/이유식 · 아기 해열제 · 체온계 (2일차 버스 이동용 여분 포함)', who: '아이 동반 가족' },
+    { id: 'c_stroll', t: '접이식 유모차', who: '아이 동반 가족' },
+    { id: 'c_med', t: '상비약 · 부모님/삼촌 복용약 (영문 처방전), 멀미약', who: '각자' },
+    { id: 'c_cloth', t: '가벼운 겉옷 (11월 말 후쿠오카 10~17℃, 유후인은 더 쌀쌀)', who: '각자' },
+    { id: 'c_cane', t: '삼촌 지팡이 · 미끄럼 방지 신발 (벳부 지옥온천 바닥 젖음)', who: '삼촌' }
+  ]}
+];
+
+/* ===================== 저장 (이 기기 브라우저) ===================== */
+const STORE = 'fukuoka2026:';
+function load(key) { try { const v = localStorage.getItem(STORE + key); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+function save(key, v) { try { localStorage.setItem(STORE + key, JSON.stringify(v)); return true; } catch (e) { return false; } }
+function drop(key) { try { localStorage.removeItem(STORE + key); } catch (e) {} }
+
+const clone = o => JSON.parse(JSON.stringify(o));
+let checkState = load('checklist') || {};
+let budget = (function () {
+  const b = load('budget');
+  return (b && b.items && b.v === 4) ? b : Object.assign(clone(DEFAULT_BUDGET), { v: 4 });
+})();
+
+/* ===================== 유틸 ===================== */
+const won = n => Math.round(n).toLocaleString('ko-KR') + '원';
+const manwon = n => (Math.round(n / 1000) / 10).toLocaleString('ko-KR') + '만원';
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const TAG_NAME = { move: '이동', rest: '휴식', eat: '식사', see: '관광' };
+
+/* ===================== 탭 ===================== */
+document.getElementById('tabs').addEventListener('click', function (e) {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('section.panel').forEach(p => p.classList.toggle('on', p.id === 'panel-' + b.dataset.tab));
+  if (b.dataset.tab === 'plan' && map) setTimeout(() => { map.invalidateSize(); drawRoute(); }, 50);
+  window.scrollTo({ top: 0 });
+});
+
+/* ===================== 지도 ===================== */
+let map = null, layer = null;
+function initMap() {
+  if (typeof L === 'undefined') {
+    document.getElementById('map').innerHTML = '<div class="note" style="margin:12px">지도를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.</div>';
+    return;
+  }
+  map = L.map('map', { scrollWheelZoom: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18, attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+  layer = L.layerGroup().addTo(map);
+}
+function pinIcon(num, color) {
+  return L.divIcon({ className: '', iconSize: [26, 26], iconAnchor: [13, 13],
+    html: `<div class="pin" style="background:${color}">${num}</div>` });
+}
+function gmapsUrl(keys) {
+  const pts = keys.map(k => P[k].ll.join(','));
+  const origin = pts[0], dest = pts[pts.length - 1];
+  const way = pts.slice(1, -1).filter((p, i, a) => p !== origin && p !== dest);
+  let u = `https://www.google.com/maps/dir/?api=1&travelmode=driving&origin=${origin}&destination=${dest}`;
+  if (way.length) u += '&waypoints=' + encodeURIComponent(way.join('|'));
+  return u;
+}
+function drawRoute() {
+  const day = DAYS[currentDay];
+  document.getElementById('legend').innerHTML =
+    day.route.map((k, i) => `<span>${i + 1}. ${esc(P[k].n)}</span>`).join('<span class="muted">→</span>');
+  document.getElementById('gmapLink').href = gmapsUrl(day.route);
+  if (!map) return;
+  layer.clearLayers();
+  const pts = day.route.map(k => P[k].ll);
+  L.polyline(pts, { color: day.color, weight: 4, opacity: .85, dashArray: '8 6' }).addTo(layer);
+  const seen = {};
+  day.route.forEach((k, i) => {
+    if (seen[k]) { seen[k].push(i + 1); return; }
+    seen[k] = [i + 1];
+  });
+  Object.keys(seen).forEach(k => {
+    const nums = seen[k];
+    const isHotel = k === 'hotel';
+    L.marker(P[k].ll, { icon: pinIcon(isHotel ? 'H' : nums[0], isHotel ? '#1f2a37' : day.color) })
+      .bindPopup(`<b>${esc(P[k].n)}</b><br>순서: ${nums.join(', ')}`)
+      .addTo(layer);
+  });
+  map.fitBounds(L.latLngBounds(pts), { padding: [30, 30] });
+}
+
+/* ===================== 일정 ===================== */
+let currentDay = 0;
+function renderDaySwitch() {
+  document.getElementById('daySwitch').innerHTML = DAYS.map((d, i) =>
+    `<button data-i="${i}" class="${i === currentDay ? 'on' : ''}">${d.label} · ${d.date}</button>`).join('');
+}
+function renderDay() {
+  const d = DAYS[currentDay];
+  document.getElementById('dayView').innerHTML = `
+    <div class="card">
+      <div class="day-head"><h3>${esc(d.title)}</h3><span class="date">${esc(d.date)}</span></div>
+      <ul class="timeline">
+        ${d.items.map(it => `
+          <li>
+            <div class="time">${esc(it.t)}</div>
+            <div>
+              <div class="what">${esc(it.h)}<span class="tag ${it.tag}">${TAG_NAME[it.tag]}</span></div>
+              ${it.d ? `<div class="desc">${esc(it.d)}</div>` : ''}
+              ${it.a ? `<div class="access">♿ ${esc(it.a)}</div>` : ''}
+            </div>
+          </li>`).join('')}
+      </ul>
+    </div>`;
+  drawRoute();
+}
+document.getElementById('daySwitch').addEventListener('click', function (e) {
+  const b = e.target.closest('button'); if (!b) return;
+  currentDay = +b.dataset.i; renderDaySwitch(); renderDay();
+});
+
+/* ===================== 항공 ===================== */
+function renderFlights() {
+  document.getElementById('flightTable').innerHTML =
+    `<thead><tr><th>구분</th><th>날짜</th><th>항공사</th><th>편명</th><th>구간</th><th>출발</th><th>도착</th></tr></thead><tbody>` +
+    FLIGHTS.map(f => `<tr class="pick"><td><b>${esc(f.dir)}</b></td><td>${esc(f.date)}</td><td>${esc(f.al)}</td>
+      <td>${esc(f.no)}</td><td>${esc(f.route)}</td><td><b>${esc(f.dep)}</b></td><td>${esc(f.arr)}</td></tr>`).join('') +
+    `</tbody>`;
+}
+
+/* ===================== 숙소 ===================== */
+function renderHotels() {
+  document.getElementById('hotelGrid').innerHTML = HOTELS.map(h => `
+    <div class="card hotel">
+      <div class="top"><h3>${esc(h.name)}</h3></div>
+      <div class="small muted">${esc(h.area)}</div>
+      <div class="small" style="margin-top:6px"><b>요금</b> ${esc(h.priceText)}</div>
+      <ul class="small pros">${h.pros.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
+      <ul class="small cons">${h.cons.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
+      ${h.pick ? `<div class="small" style="margin-top:10px"><b>객실 배정 (4실)</b></div>
+        <div class="rooms">${ROOMS.map(r => `<div class="room"><b>${esc(r.g)} · ${esc(r.r)}</b>${esc(r.m)}</div>`).join('')}</div>` : ''}
+    </div>`).join('');
+}
+
+/* ===================== 예산 ===================== */
+function itemWon(it) {
+  const unit = it.cur === 'JPY' ? it.price * budget.rate / 100 : it.price;
+  return unit * it.qty;
+}
+function persist() { save('budget', budget); }
+function renderBudgetTable() {
+  document.getElementById('rate').value = budget.rate;
+  document.getElementById('people').value = budget.people;
+  document.getElementById('perPerson').value = budget.perPerson;
+  document.getElementById('reserve').value = budget.reserve;
+  document.getElementById('budgetTable').innerHTML =
+    `<thead><tr><th>구분</th><th>항목</th><th class="num">단가</th><th class="num">수량</th><th class="num">원화 합계</th></tr></thead><tbody>` +
+    budget.items.map((it, i) => `<tr>
+      <td class="small muted">${esc(it.cat)}</td>
+      <td>${esc(it.label)}</td>
+      <td class="num"><input type="number" data-i="${i}" data-f="price" value="${it.price}" step="1000"> <span class="small muted">${it.cur === 'JPY' ? '엔' : '원'}</span></td>
+      <td class="num"><input type="number" class="qty" data-i="${i}" data-f="qty" value="${it.qty}" step="1"></td>
+      <td class="num" id="sum-${i}"></td></tr>`).join('') +
+    `<tr><td></td><td class="muted">예비비 (${budget.reserve}%)</td><td></td><td></td><td class="num" id="sum-reserve"></td></tr>
+     <tr><td></td><td><b>합계</b></td><td></td><td></td><td class="num"><b id="sum-total"></b></td></tr></tbody>`;
+  recalc();
+}
+function recalc() {
+  let sub = 0; const byCat = {};
+  budget.items.forEach((it, i) => {
+    const v = itemWon(it); sub += v;
+    byCat[it.cat] = (byCat[it.cat] || 0) + v;
+    const cell = document.getElementById('sum-' + i); if (cell) cell.textContent = won(v);
+  });
+  const reserve = sub * budget.reserve / 100;
+  const total = sub + reserve;
+  const limit = budget.perPerson * budget.people;
+  const per = total / Math.max(1, budget.people);
+  const left = limit - total;
+  document.getElementById('sum-reserve').textContent = won(reserve);
+  document.getElementById('sum-total').textContent = won(total);
+  document.getElementById('summary').innerHTML = `
+    <div class="stat"><div class="k">총 예상 경비</div><div class="v">${manwon(total)}</div></div>
+    <div class="stat ${per <= budget.perPerson ? 'ok' : 'over'}"><div class="k">1인 평균 (${budget.people}명 균등)</div><div class="v">${manwon(per)}</div></div>
+    <div class="stat ${left >= 0 ? 'ok' : 'over'}"><div class="k">전체 예산 ${manwon(limit)} 대비</div><div class="v">${left >= 0 ? '여유 ' : '초과 '}${manwon(Math.abs(left))}</div></div>`;
+  if (reserve > 0) byCat['예비비'] = reserve;
+  const max = Math.max.apply(null, Object.values(byCat).concat([1]));
+  document.getElementById('bars').innerHTML = Object.keys(byCat).map(k => `
+    <div class="bar-row"><span>${esc(k)}</span>
+      <div class="bar"><span style="width:${(byCat[k] / max * 100).toFixed(1)}%"></span></div>
+      <span class="num small" style="text-align:right">${manwon(byCat[k])}</span></div>`).join('');
+}
+document.getElementById('budgetTable').addEventListener('input', function (e) {
+  const el = e.target; if (!el.dataset.f) return;
+  budget.items[+el.dataset.i][el.dataset.f] = Number(el.value) || 0;
+  recalc(); persist();
+});
+['rate', 'people', 'perPerson', 'reserve'].forEach(function (id) {
+  document.getElementById(id).addEventListener('input', function (e) {
+    budget[id] = Number(e.target.value) || 0;
+    persist();
+    if (id === 'reserve') renderBudgetTable(); else recalc();
+  });
+});
+document.getElementById('resetBudget').addEventListener('click', function () {
+  budget = Object.assign(clone(DEFAULT_BUDGET), { v: 4 });
+  drop('budget'); renderBudgetTable();
+  const el = document.getElementById('savedMsg'); el.textContent = '기본값으로 되돌림';
+  setTimeout(() => { el.textContent = ''; }, 2500);
+});
+
+/* ===================== 체크리스트 ===================== */
+function renderChecks() {
+  let total = 0, done = 0;
+  document.getElementById('checkList').innerHTML = CHECKS.map(g => `
+    <div class="card check-group"><h3>${esc(g.group)}</h3>
+      ${g.items.map(it => {
+        total++; const on = !!checkState[it.id]; if (on) done++;
+        return `<label class="check-item ${on ? 'done' : ''}">
+          <input type="checkbox" data-id="${it.id}" ${on ? 'checked' : ''}>
+          <span><span class="t">${esc(it.t)}</span><br><span class="who">담당: ${esc(it.who)}</span></span></label>`;
+      }).join('')}
+    </div>`).join('');
+  document.getElementById('checkCount').textContent = `${done} / ${total} 완료`;
+  document.getElementById('checkBar').style.width = (total ? done / total * 100 : 0) + '%';
+}
+document.getElementById('checkList').addEventListener('change', function (e) {
+  const id = e.target.dataset.id; if (!id) return;
+  checkState[id] = e.target.checked;
+  save('checklist', checkState);
+  renderChecks();
+});
+
+/* ===================== 시작 ===================== */
+initMap();
+renderDaySwitch(); renderDay();
+renderFlights();
+renderHotels();
+renderBudgetTable();
+renderChecks();
+</script>
+</body>
+</html>
