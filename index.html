@@ -235,6 +235,13 @@
   .f-times { display: flex; gap: 28px; margin-bottom: 6px; }
   .f-times .k { display: block; font-size: 12px; color: var(--muted); }
   .f-times b { font-size: 20px; font-variant-numeric: tabular-nums; }
+
+  .tour h4.sub { margin: 14px 0 6px; font-size: 14px; color: var(--sea); }
+  .meet-time { font-size: 22px; font-weight: 900; font-variant-numeric: tabular-nums; margin-bottom: 2px; }
+  figure.ph.meet { margin: 10px 0 8px; }
+  figure.ph.meet img { aspect-ratio: auto; max-height: 340px; object-fit: contain; background: #fff; }
+  .stop { display: grid; grid-template-columns: 84px 1fr; gap: 12px; padding: 10px 0; border-top: 1px dashed var(--line); }
+  .stop img { width: 84px; height: 84px; object-fit: cover; border-radius: 10px; }
 </style></head>
 <body>
 
@@ -362,8 +369,21 @@ const TOUR = {
   kakao: 'funtrip',
   email: 'dtenking@gmail.com',
   emergency: '+82 010-2768-5565',
-  meet: '07:40~07:55 하카타역 치쿠시구치 방면 "로손 오리엔탈 호텔" 앞, 타비버스 가이드 미팅 (구글 지도에서 "로손 오리엔탈 호텔 후쿠오카" 검색)',
-  note: '버스는 정시 출발하니 미팅 시간에 늦지 않게 도착하세요. 18:00 하카타역 도착 후 개별 해산.'
+  time: '07:40 ~ 07:55',
+  place: '하카타역 치쿠시구치(筑紫口) 방면 로손 오리엔탈 호텔 후쿠오카점 앞 · "타비버스" 가이드 미팅',
+  howto: '하카타역 치쿠시구치로 나오면 왼쪽편 오리엔탈 호텔 건물 1층에 로손 편의점이 있습니다. 구글 지도에서 "로손 오리엔탈 호텔 후쿠오카점"으로 검색하세요.',
+  photo: 'img/meeting-lawson.jpg',
+  note: '버스는 정시 출발하니 미팅 시간에 늦지 않게 도착하세요. 18:00 하카타역 도착 후 개별 해산.',
+  course: [
+    { n: '다자이후 텐만구', min: 70, img: 'img/tour-dazaifu.jpg',
+      d: '학문의 신 스가와라노미치자네를 모시고 있는 다자이후 텐만구는 자녀의 학업 성취를 기원하는 부모님들의 발길이 끊이지 않는 곳입니다. 넓은 경내에는 매화나무, 녹나무 등 아름다운 꽃이 계절마다 색다른 분위기를 연출하고 있습니다. 스가와라의 유체를 싣고 고향(교토)으로 향하던 우마차가 갑자기 멈춰서 움직이지 않았다는 전설이 있으며, 소의 동상과 연못이 아름답습니다.' },
+    { n: '유후인', min: 160, img: 'img/tour-yufuin.jpg',
+      d: '유후인에 오면 동화 속으로 들어가는 느낌이 듭니다. 특히 긴린코 호수가 그렇습니다. 기온차가 심한 아침이면 물안개가 피어올라 동화 속의 분위기를 만드는데, 이 때문인지 일본 젊은이들 사이에 프러포즈하기 좋은 곳으로 손꼽히곤 합니다. 젊은 여성이 혼자서도 안심하고 방문할 수 있는 관광지입니다.' },
+    { n: '유후다케', min: 20, img: 'img/tour-yufudake.jpg',
+      d: '유후인의 전경을 조망할 수 있는 전망대가 있으며 아름다운 풍경을 자랑합니다.' },
+    { n: '벳부 가마도지옥', min: 40, img: 'img/tour-beppu.jpg',
+      d: '지옥순례란 벳부의 대표적인 온천 8개를 돌아보는 것을 말합니다. 이곳에선 비교적 여러 형태의 \'지옥\'을 볼 수 있습니다. \'가마도\'란 이 지역 수호신 카마도 하치만구의 제사 때 이 온천에서 나오는 90도의 증기를 이용해 밥을 한 것에서 유래되었습니다. 바위틈으로 100도의 뜨거운 수증기를 내뿜는 부뚜막 지옥, 스님 머리를 닮았다고 하는 스님지옥을 볼 수 있습니다.' }
+  ]
 };
 
 const DAYS = [
@@ -399,20 +419,20 @@ const DAYS = [
     items: [
       { t: '06:40', h: '조식 (간단히)', tag: 'eat', d: '투어 출발이 이르니 호텔 조식 또는 편의점 · 빵으로 간단히' },
       { t: '07:10', h: '택시 2대 → 하카타역 집결지 (약 20분)', tag: 'move',
-        d: '치쿠시구치 방면 "로손 오리엔탈 호텔" 앞으로. 구글 지도에서 "로손 오리엔탈 호텔 후쿠오카" 검색.',
+        d: '치쿠시구치 방면 "로손 오리엔탈 호텔 후쿠오카점" 앞으로. 위 「만나는 장소」 사진 참고.',
         a: TAXI_NOTE },
       { t: '07:40', h: '타비버스 가이드 미팅 (07:40~07:55)', tag: 'move',
-        d: '버스는 정시 출발하니 늦지 않게 도착.', a: BUS_HELP },
+        d: '하카타역 치쿠시구치 로손 오리엔탈 호텔점 앞. 버스는 정시 출발하니 늦지 않게 도착.', a: BUS_HELP },
       { t: '08:00', h: '하카타역 출발 → 다자이후 (약 30분)', tag: 'move', d: '' },
       { t: '08:30', h: '다자이후 텐만구 (08:30~09:40)', tag: 'see',
         d: '학문의 신을 모신 신사. 참배길 상점가, 우메가에모치 간식.',
         a: '경사 급한 아치형 다리는 우회. 버스 승하차 시 부축' },
       { t: '09:40', h: '유후인으로 이동 (약 1시간 40분)', tag: 'move', d: '중간에 쿠스 휴게소 정차 (약 15분) — 화장실 · 기저귀 교체' },
       { t: '11:40', h: '유후인 민예촌 거리 · 긴린코 호수 (11:40~14:40)', tag: 'see',
-        d: '일본의 정취와 아기자기함을 느끼는 민예촌 거리, 유후인 안개의 원천 긴린코 호수. 점심은 자유식.',
+        d: '일본의 정취와 아기자기함을 느낄 수 있는 유후인 민예촌 거리, 유후인 안개의 원천 긴린코 호수. 점심은 자유식.',
         a: '거리는 완만한 오르막에 사람이 많음 — 삼촌은 입구 쪽 카페에서 쉬고 가족이 교대로 동행' },
       { t: '14:40', h: '유후다케 인생샷 포토 스팟', tag: 'see', d: '가족 단체 사진 찍기', a: '내리기 어려우면 버스에서 대기 가능' },
-      { t: '14:55', h: '벳부로 이동 (약 30분)', tag: 'move', d: '' },
+      { t: '14:55', h: '유후다케 출발 → 벳부 이동 (약 30분)', tag: 'move', d: '' },
       { t: '15:20', h: '벳부 지옥온천순례 · 가마도지옥 (15:20~16:00)', tag: 'see',
         d: '온천 증기 구경. 라무네 + 온천계란 증정.', a: '바닥이 젖어 미끄러울 수 있음. 버스 승하차 시 부축' },
       { t: '16:00', h: '후쿠오카로 이동 (약 2시간)', tag: 'move', d: '아이들 차에서 낮잠' },
@@ -640,15 +660,25 @@ function renderDaySwitch() {
     `<button data-i="${i}" class="${i === currentDay ? 'on' : ''}">${d.label} · ${d.date}</button>`).join('');
 }
 function tourCard(t) {
+  const tel = s => s.replace(/[^+0-9]/g, '');
   return `<div class="card tour">
     <h3>🚌 ${esc(t.name)}</h3>
-    <div class="kv"><span>집결</span><b>${esc(t.meet)}</b></div>
+    <h4 class="sub">만나는 시간 · 장소</h4>
+    <div class="meet-time">${esc(t.time)}</div>
+    <div class="small"><b>${esc(t.place)}</b></div>
+    <figure class="ph meet"><img src="${esc(t.photo)}" alt="만나는 장소: 하카타역 치쿠시구치 로손 오리엔탈 호텔 후쿠오카점 앞" loading="lazy"><figcaption>만나는 장소 — 오리엔탈 호텔 1층 로손 편의점 앞</figcaption></figure>
+    <div class="small">${esc(t.howto)}</div>
+    <div class="note">${esc(t.note)}</div>
+    <h4 class="sub">코스</h4>
+    ${t.course.map(c => `<div class="stop">
+      <img src="${esc(c.img)}" alt="${esc(c.n)}" loading="lazy">
+      <div><b>${esc(c.n)}</b> <span class="muted small">· ${c.min}분 소요</span><div class="small">${esc(c.d)}</div></div></div>`).join('')}
+    <h4 class="sub">업체 연락처</h4>
     <div class="kv"><span>업체</span><b>${esc(t.vendor)}</b></div>
-    <div class="kv"><span>현지 연락처</span><a href="tel:${esc(t.phone.replace(/[^+0-9]/g, ''))}">${esc(t.phone)}</a></div>
+    <div class="kv"><span>현지 연락처</span><a href="tel:${esc(tel(t.phone))}">${esc(t.phone)}</a></div>
     <div class="kv"><span>카카오톡 ID</span><b>${esc(t.kakao)}</b></div>
     <div class="kv"><span>이메일</span><a href="mailto:${esc(t.email)}">${esc(t.email)}</a></div>
-    <div class="kv"><span>비상 연락처</span><a href="tel:${esc(t.emergency.replace(/[^+0-9]/g, ''))}">${esc(t.emergency)}</a></div>
-    <div class="note">${esc(t.note)}</div>
+    <div class="kv"><span>비상 연락처</span><a href="tel:${esc(tel(t.emergency))}">${esc(t.emergency)}</a></div>
   </div>`;
 }
 function renderDay() {
