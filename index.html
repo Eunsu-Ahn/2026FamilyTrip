@@ -209,6 +209,32 @@
   #budgetTable td:nth-child(2) { min-width: 170px; }
   .pros li::marker { color: var(--leaf); }
   .cons { color: #7a4212; }
+
+  /* 사진 · 카드 */
+  .photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 12px 0 6px; }
+  figure.ph { margin: 0; border-radius: 10px; overflow: hidden; background: #eee8df; }
+  figure.ph img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+  figure.ph figcaption { font-size: 12px; padding: 4px 8px; color: var(--muted); background: var(--card); }
+  .sec { margin: 18px 0 8px; }
+  .room-card { padding: 0; overflow: hidden; }
+  .room-card figure.ph { border-radius: 0; }
+  .room-card figure.ph img { aspect-ratio: 16 / 7; }
+  .rc-body { padding: 14px 16px 16px; }
+  .kv { display: grid; grid-template-columns: 92px 1fr; gap: 8px; font-size: 13.5px; padding: 5px 0; border-top: 1px dashed var(--line); }
+  .kv span { color: var(--muted); }
+  .kv a { color: var(--sea); font-weight: 700; text-decoration: none; word-break: break-all; }
+  .lunch { padding: 8px 0; border-top: 1px dashed var(--line); }
+  .lunch:first-child { border-top: none; }
+  .tour { border-left: 5px solid var(--sun); }
+  tr.grp td { background: var(--sea-soft); color: #164e63; font-weight: 700; font-size: 13px; }
+  .flight .f-head { display: flex; justify-content: space-between; align-items: center; }
+  .ok-badge { background: var(--leaf-soft); color: var(--leaf); font-weight: 700; font-size: 12px; border-radius: 999px; padding: 2px 10px; }
+  .f-date { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .f-route { display: flex; gap: 10px; align-items: center; font-size: 17px; font-weight: 900; margin: 8px 0; flex-wrap: wrap; }
+  .f-route i { font-style: normal; color: var(--sea); }
+  .f-times { display: flex; gap: 28px; margin-bottom: 6px; }
+  .f-times .k { display: block; font-size: 12px; color: var(--muted); }
+  .f-times b { font-size: 20px; font-variant-numeric: tabular-nums; }
 </style></head>
 <body>
 
@@ -245,34 +271,30 @@
     </div>
     <div id="dayView"></div>
     <div class="note blue">
-      1일차는 택시 3대, 2일차는 마이리얼트립 버스 투어(9명 40만원) + 택시, 3일차 공항 이동만 전용 밴입니다. 2일차는 가장 긴 하루라 삼촌 승하차 부축과 아이들 휴식 시간을 꼭 챙기세요.
+      공항 이동(1·3일차)과 2일차 집결지 이동은 택시 2대, 2일차 관광은 마이리얼트립 버스 투어입니다. 2일차는 가장 긴 하루라 삼촌 승하차 부축과 아이들 휴식 시간을 꼭 챙기세요.
     </div>
   </section>
 
   <!-- 항공 -->
   <section class="panel" id="panel-flight">
-    <h2>항공편 (확정안)</h2>
+    <h2>항공 예약 내역</h2>
+    <div id="flightCards"></div>
+    <div class="note">편명 · 도착 시각은 항공사 스케줄 기준 예상치입니다. 예약번호는 공개 페이지라 적지 않았으니 예약 확인서를 확인하세요.</div>
     <div class="card">
-      <div class="table-wrap"><table id="flightTable"></table></div>
-      <div class="note red">
-        도착 시각은 통상 비행시간(약 1시간 25~30분) 기준 예상치입니다. 동계 스케줄(10/25~) 기준 실제 시각은 예약 확인서로 다시 확인하세요.
-      </div>
-    </div>
-    <div class="card">
-      <h3>예약할 때 함께 신청할 것</h3>
+      <h3>꼭 챙길 것</h3>
       <ul class="small">
-        <li><b>가는 편·오는 편 항공사가 다릅니다</b> — 에어서울과 이스타항공 각각 위탁수하물 무게·유모차 규정을 따로 확인하세요.</li>
+        <li><b>가는 편·오는 편 항공사가 다릅니다</b> — 트리니티항공(구 티웨이)과 이스타항공 각각 위탁수하물 무게 · 유모차 규정을 따로 확인하세요.</li>
         <li><b>삼촌 휠체어 서비스</b> — 두 항공사 모두에 각각 신청 (인천 출발, 후쿠오카 도착, 후쿠오카 출발, 인천 도착 전 구간).</li>
-        <li><b>영아</b> — 성인 1명 무릎 탑승으로 예약. 배시넷 가능 여부는 기종별로 확인.</li>
+        <li><b>영아</b> — 성인 1명 무릎 탑승. 배시넷 가능 여부는 기종별로 확인.</li>
         <li><b>좌석</b> — 9명 좌석을 앞쪽에 붙여 지정 (삼촌은 통로 쪽 앞열).</li>
-        <li><b>이른 출발</b> — 08:10 출발이라 인천공항 06:10 집결. 새벽 이동이 부담되면 공항 근처 전날 숙박이나 공항 픽업 차량도 고려.</li>
+        <li><b>집결</b> — 11/20 10:10 출발이라 인천공항 07:20 집결을 권장 (단체 + 휠체어 + 영아).</li>
       </ul>
     </div>
   </section>
 
   <!-- 숙소 -->
   <section class="panel" id="panel-hotel">
-    <h2>숙소 (프린스 호텔 4실 2박 360만원)</h2>
+    <h2>숙소</h2>
     <div class="hotel-grid" id="hotelGrid"></div>
   </section>
 
@@ -327,45 +349,60 @@ const P = {
   yufuin:   { n: '유후인 민예촌 거리 · 긴린코 호수', ll: [33.2650, 131.3650] },
   yufudake: { n: '유후다케 포토 스팟', ll: [33.2760, 131.3840] },
   beppu:    { n: '벳부 가마도지옥', ll: [33.3163, 131.4740] },
-  lunch3:   { n: '호텔 인근 맛집 (점심)', ll: [33.5927, 130.3612] }
+  lunch3:   { n: '숙소 인근 점심 (추천 식당 참고)', ll: [33.5940, 130.3560] }
 };
 
 /* ===================== 일정 ===================== */
 const BUS_HELP = '버스 오르내릴 때 삼촌 부축 필요 — 어른 2명이 앞뒤에서 부축, 삼촌은 맨 앞좌석 · 가장 먼저 타고 가장 나중에 내리기';
+const TAXI_NOTE = '9명 → 택시 2대 (4명씩 + 영아는 무릎). 큰 캐리어가 많으면 JPN 택시 · 점보 택시를 요청하고, 삼촌은 문이 넓은 차의 앞/뒷좌석 가까운 자리에';
+
+const TOUR = {
+  name: '후쿠오카 다자이후 · 유후인 · 벳부 버스 투어 (마이리얼트립)',
+  vendor: '펀트립 (Funtrip)',
+  phone: '+82 010-2768-5565',
+  kakao: 'funtrip',
+  email: 'dtenking@gmail.com',
+  emergency: '+82 010-2768-5565',
+  meet: '07:40~07:55 하카타역 치쿠시구치 방면 "로손 오리엔탈 호텔" 앞, 타비버스 가이드 미팅 (구글 지도에서 "로손 오리엔탈 호텔 후쿠오카" 검색)',
+  note: '버스는 정시 출발하니 미팅 시간에 늦지 않게 도착하세요. 18:00 하카타역 도착 후 개별 해산.'
+};
 
 const DAYS = [
   {
-    label: '1일차', date: '11/20 (금)', title: '도착 · 시내 구경 · 모모치 해변 저녁', color: '#1f6f8b',
-    route: ['airport', 'hotel', 'city', 'hotel', 'beach'],
+    label: '1일차', date: '11/20 (금)', title: '도착 · 택시로 숙소 · 점심 · 해변 산책', color: '#1f6f8b',
+    route: ['airport', 'hotel', 'lunch3', 'tower', 'hotel', 'beach'],
     items: [
-      { t: '06:10', h: '인천공항 T1 집결 · 수속', tag: 'move',
-        d: '에어서울 카운터에서 9명 함께 수속. 삼촌 휠체어 서비스 인계.',
-        a: '휠체어 서비스는 카운터에서 게이트까지 이어서 안내' },
-      { t: '08:10', h: '인천 출발 (에어서울 RS433)', tag: 'move', d: '비행 약 1시간 25분' },
-      { t: '09:35', h: '후쿠오카 공항 국제선 도착 (예상)', tag: 'move', d: '입국 심사 · 짐 찾기' },
-      { t: '10:40', h: '택시 3대 → 호텔 (약 25분)', tag: 'move',
-        d: '국제선 택시 승강장에서 3대로 나눠 탑승. 체크인 전이라 짐만 맡기기.',
-        a: '큰 캐리어가 많으면 JPN 택시 · 점보 택시 요청. 영아·5살은 휴대용 카시트나 아기띠 준비' },
-      { t: '11:30', h: '점심 · 호텔 인근 맛집', tag: 'eat', d: '호텔 주변에서 가볍게. 거리에 따라 도보 또는 택시.' },
-      { t: '13:00', h: '후쿠오카 시내 구경 (택시)', tag: 'see',
-        d: '캐널시티 하카타 쇼핑몰 · 나카스 강변 산책. 실내 위주라 날씨와 상관없이 편함.',
-        a: '택시로 입구 하차 · 캐널시티 안은 평지와 엘리베이터' },
-      { t: '15:30', h: '택시로 호텔 복귀 · 체크인 · 휴식', tag: 'rest', d: '새벽 출발이라 아이 낮잠, 어른들도 쉬는 시간' },
-      { t: '18:00', h: '저녁 · 모모치 해변 근처 식당', tag: 'eat',
-        d: '해변 앞 마리존 일대 식당에서 바다 보며 저녁.',
-        a: '호텔에서 가까운 거리. 삼촌은 필요하면 택시 1대로 이동' },
-      { t: '19:30', h: '모모치 해변 산책 · 호텔 복귀', tag: 'rest',
-        d: '해변 데크 산책, 후쿠오카 타워 야경 감상.',
-        a: '데크는 평지. 모래사장은 삼촌 동선에서 제외' }
+      { t: '07:20', h: '인천공항 집결 · 수속', tag: 'move',
+        d: '트리니티항공(구 티웨이) 카운터에서 9명 함께 수속. 터미널은 예약 확인서로 확인.',
+        a: '삼촌 휠체어 서비스는 카운터에서 인계 — 게이트까지 이어서 안내' },
+      { t: '10:10', h: '인천 출발 (트리니티항공 TW201)', tag: 'move', d: '비행 약 1시간 25분' },
+      { t: '11:35', h: '후쿠오카 공항 국제선 도착 (예상)', tag: 'move', d: '입국 심사 · 짐 찾기 (단체라 여유 있게 약 1시간)' },
+      { t: '12:40', h: '택시 2대 → 숙소 근처 (약 25~30분)', tag: 'move',
+        d: '국제선 택시 승강장에서 2대로 나눠 탑승. 숙소에 먼저 가서 짐부터 맡기기.',
+        a: TAXI_NOTE },
+      { t: '13:10', h: '숙소 도착 · 짐 맡기기', tag: 'rest', d: '체크인은 아직 전. 프런트에 짐 보관을 부탁하세요.',
+        a: '짐 보관 가능 여부는 미리 호텔(+81-92-400-1806)에 문의' },
+      { t: '13:30', h: '점심 · 숙소 근처 식당', tag: 'eat',
+        d: '체크인 전 가볍게 점심. 아래 「점심 추천」 참고 (돈카츠 · 구이 · 수제 햄버거).',
+        a: '식당은 도보 거리. 삼촌 이동이 힘들면 가까운 곳으로' },
+      { t: '14:40', h: '호텔 앞 모모치 해변 · 후쿠오카 타워 산책', tag: 'see',
+        d: '체크인을 기다리며 해변 데크를 천천히 걷기.',
+        a: '데크는 평지. 모래사장은 삼촌 동선에서 제외' },
+      { t: '15:00', h: '체크인 · 객실 휴식', tag: 'rest', d: '체크인 시간은 호텔에 확인. 새벽 출발이었으니 낮잠 · 휴식.' },
+      { t: '18:00', h: '저녁 · 모모치 해변 근처 식당 또는 호텔 레스토랑', tag: 'eat',
+        d: '호텔 레스토랑(요카 테라스)이나 해변 앞 식당에서 바다 보며 저녁.', a: '9명 테이블석 예약 · 아기의자 요청' },
+      { t: '19:30', h: '모모치 해변 산책 · 타워 야경', tag: 'rest', d: '해변 데크 산책 후 호텔 복귀' }
     ]
   },
   {
     label: '2일차', date: '11/21 (토)', title: '버스 투어 · 다자이후 · 유후인 · 벳부', color: '#e08a3c',
+    tour: TOUR,
     route: ['hotel', 'hakataSt', 'dazaifu', 'yufuin', 'yufudake', 'beppu', 'hakataSt', 'hotel'],
     items: [
-      { t: '06:40', h: '조식 (간단히)', tag: 'eat', d: '투어 출발이 이르니 호텔 조식이나 편의점으로 간단히' },
-      { t: '07:10', h: '택시 3대 → 하카타역 (약 20분)', tag: 'move',
-        d: '치쿠시구치 방면 "로손 오리엔탈 호텔점" 앞으로. 구글 지도에서 "로손 오리엔탈 호텔 후쿠오카" 검색.' },
+      { t: '06:40', h: '조식 (간단히)', tag: 'eat', d: '투어 출발이 이르니 호텔 조식 또는 편의점 · 빵으로 간단히' },
+      { t: '07:10', h: '택시 2대 → 하카타역 집결지 (약 20분)', tag: 'move',
+        d: '치쿠시구치 방면 "로손 오리엔탈 호텔" 앞으로. 구글 지도에서 "로손 오리엔탈 호텔 후쿠오카" 검색.',
+        a: TAXI_NOTE },
       { t: '07:40', h: '타비버스 가이드 미팅 (07:40~07:55)', tag: 'move',
         d: '버스는 정시 출발하니 늦지 않게 도착.', a: BUS_HELP },
       { t: '08:00', h: '하카타역 출발 → 다자이후 (약 30분)', tag: 'move', d: '' },
@@ -374,32 +411,32 @@ const DAYS = [
         a: '관광안내소에서 휠체어 대여 가능. 경사 급한 아치형 다리는 우회. 버스 승하차 시 부축' },
       { t: '09:40', h: '유후인으로 이동 (약 1시간 40분)', tag: 'move', d: '중간에 쿠스 휴게소 정차 (약 15분) — 화장실 · 기저귀 교체' },
       { t: '11:40', h: '유후인 민예촌 거리 · 긴린코 호수 (11:40~14:40)', tag: 'see',
-        d: '아기자기한 거리 구경과 점심(자유식), 온천물이 솟는 긴린코 호수.',
+        d: '일본의 정취와 아기자기함을 느끼는 민예촌 거리, 유후인 안개의 원천 긴린코 호수. 점심은 자유식.',
         a: '거리는 완만한 오르막에 사람이 많음 — 삼촌은 입구 쪽 카페에서 쉬고 가족이 교대로 동행' },
-      { t: '14:40', h: '유후다케 포토 스팟', tag: 'see', d: '가족 단체 사진 찍기', a: '차에서 내리기 어려우면 버스에서 대기' },
+      { t: '14:40', h: '유후다케 인생샷 포토 스팟', tag: 'see', d: '가족 단체 사진 찍기', a: '내리기 어려우면 버스에서 대기 가능' },
       { t: '14:55', h: '벳부로 이동 (약 30분)', tag: 'move', d: '' },
-      { t: '15:20', h: '벳부 가마도지옥 (15:20~16:00)', tag: 'see',
-        d: '지옥온천 순례. 라무네 · 온천계란 증정.', a: '온천 수증기 · 바닥이 젖어 미끄러울 수 있음. 버스 승하차 시 부축' },
+      { t: '15:20', h: '벳부 지옥온천순례 · 가마도지옥 (15:20~16:00)', tag: 'see',
+        d: '온천 증기 구경. 라무네 + 온천계란 증정.', a: '바닥이 젖어 미끄러울 수 있음. 버스 승하차 시 부축' },
       { t: '16:00', h: '후쿠오카로 이동 (약 2시간)', tag: 'move', d: '아이들 차에서 낮잠' },
-      { t: '18:00', h: '하카타역 도착 · 해산', tag: 'move', d: '', a: BUS_HELP },
+      { t: '18:00', h: '하카타역 도착 · 개별 해산', tag: 'move', d: '', a: BUS_HELP },
       { t: '18:15', h: '저녁 · 하카타역 주변', tag: 'eat',
         d: '역 빌딩 식당가(모츠나베 · 미즈타키 등)에서 저녁.',
         a: '좌식(다다미) 아닌 테이블석으로 예약 — 삼촌·시부모님 편의' },
-      { t: '19:45', h: '택시 3대 → 호텔', tag: 'move', d: '약 20분' }
+      { t: '19:45', h: '택시 2대 → 숙소 (약 20분)', tag: 'move', d: '', a: TAXI_NOTE }
     ]
   },
   {
-    label: '3일차', date: '11/22 (일)', title: '느긋한 오전 · 오후 귀국', color: '#3f8f5b',
-    route: ['hotel', 'tower', 'hotel', 'lunch3', 'airport'],
+    label: '3일차', date: '11/22 (일)', title: '느긋한 오전 · 점심 · 오후 귀국', color: '#3f8f5b',
+    route: ['hotel', 'tower', 'lunch3', 'airport'],
     items: [
       { t: '08:30', h: '조식 · 짐 정리', tag: 'eat', d: '전날 긴 하루였으니 천천히' },
       { t: '09:30', h: '모모치 해변 산책 · 후쿠오카 타워', tag: 'see',
         d: '호텔 앞 해변 데크 산책. 타워 전망대는 엘리베이터로 올라감 (선택).',
         a: '해변 데크는 평지. 모래사장은 삼촌 동선에서 제외' },
-      { t: '11:00', h: '체크아웃 · 전용 밴 탑승 (3시간 대절)', tag: 'move', d: '짐은 밴에 싣고 이동' },
-      { t: '11:20', h: '점심 · 호텔 인근 맛집', tag: 'eat', d: '마지막 쇼핑 · 기념품도 함께' },
-      { t: '12:50', h: '밴 → 공항 국제선 (약 25분)', tag: 'move', d: '' },
-      { t: '13:20', h: '공항 도착 · 수속', tag: 'move',
+      { t: '11:00', h: '체크아웃 · 짐 정리', tag: 'rest', d: '체크아웃 시간은 호텔에 확인. 큰 짐은 프런트에 맡기고 점심 먹으러 가도 됨.' },
+      { t: '11:20', h: '점심 · 숙소 근처 식당', tag: 'eat', d: '마지막 식사. 아래 「점심 추천」 참고.' },
+      { t: '12:30', h: '택시 2대 → 공항 국제선 (약 25~30분)', tag: 'move', d: '', a: TAXI_NOTE },
+      { t: '13:10', h: '공항 도착 · 수속', tag: 'move',
         d: '단체 + 휠체어 서비스라 출발 2시간 전 도착. 면세점 이용.',
         a: '이스타항공 카운터에서 휠체어 서비스 인계' },
       { t: '15:20', h: '후쿠오카 출발 (이스타항공 ZE648)', tag: 'move', d: '' },
@@ -408,82 +445,116 @@ const DAYS = [
   }
 ];
 
+/* ===================== 항공 (예약 확정) ===================== */
 const FLIGHTS = [
-  { dir: '가는 편', date: '11/20 (금)', al: '에어서울', no: 'RS433', route: '인천 T1 → 후쿠오카', dep: '08:10', arr: '09:35 (예상)' },
-  { dir: '오는 편', date: '11/22 (일)', al: '이스타항공', no: 'ZE648', route: '후쿠오카 → 인천', dep: '15:20', arr: '16:50 (예상)' }
+  { dir: '가는 편', date: '2026.11.20 (금)', al: '트리니티항공 (구 티웨이항공)', no: 'TW201',
+    from: '인천 (ICN)', to: '후쿠오카 (FUK)', dep: '10:10', arr: '11:35 (예상)', pax: 9, color: '#1f6f8b' },
+  { dir: '오는 편', date: '2026.11.22 (일)', al: '이스타항공', no: 'ZE648',
+    from: '후쿠오카 (FUK)', to: '인천 (ICN)', dep: '15:20', arr: '16:50 (예상)', pax: 9, color: '#e08a3c' }
 ];
 
 /* ===================== 숙소 ===================== */
-const HOTELS = [
-  {
-    id: 'prince', name: '후쿠오카 프린스 호텔 모모치하마', pick: true,
-    area: '모모치 해변 도보 1분 · 공항 차로 약 20분 · 2026년 3월 개관',
-    night: 450000,
-    priceText: '확정 견적 4실 × 2박 총 360만원 (디럭스 트윈 3인용 1 · 슈페리어 트윈 2 · 유니버설 트윈 1)',
-    pros: [
-      '전 객실 229실 모두 오션뷰 — 방에서 쉬기만 해도 바다',
-      '올해 문 연 신축이라 엘리베이터·욕실 등 시설이 깨끗함',
-      '모모치 해변·마리존·후쿠오카 타워가 모두 걸어서 갈 거리'
-    ],
-    cons: [
-      '수영장·대욕장 정보는 없음 → 아이 물놀이는 기대하지 않기'
-    ]
-  }
-];
+const IMG = 'https://www.princehotels.com/momochihama/wp-content/uploads/sites/75/';
+const HOTEL = {
+  name: '후쿠오카 프린스 호텔 모모치하마',
+  jp: '福岡プリンスホテル ももち浜',
+  addr: '福岡市早良区百道浜 2-3-23',
+  tel: '+81-92-400-1806',
+  site: 'https://www.princehotels.com/momochihama/',
+  intro: '2026년 3월 17일 문을 연 신축 호텔로, 모모치 해변 공원 바로 앞에 있습니다. 229개 객실이 모두 하카타만과 바다를 바라보는 오션뷰예요. 후쿠오카 타워, 후쿠오카 시 박물관, 미즈호 페이페이 돔이 가깝습니다.',
+  facts: [
+    ['위치', '모모치 해변 바로 앞 · 해변 공원까지 도보 1분'],
+    ['공항에서', '차로 약 20분 (택시)'],
+    ['텐진에서', '버스로 약 20분'],
+    ['식사', '올데이 다이닝 레스토랑(요카 테라스: 규슈 식재료 일식·프렌치, 테라스석) · 카페 요카스탠드(테라스) · 오후 티세트'],
+    ['시설', '피트니스 짐 · 세탁 서비스 · 로비의 하카타 아티스트 협업 작품'],
+    ['객실', '229실 전부 오션뷰 · 슈페리어/디럭스 트윈 · 유니버설 룸 등']
+  ],
+  photos: [
+    { src: IMG + '2026/06/entrance_trimming_490x323.jpg', cap: '호텔 입구' },
+    { src: IMG + '2026/06/lobby_art_490x323-1.jpg', cap: '로비 · 하카타 아트' },
+    { src: IMG + '2026/06/restaurant_490x323.jpg', cap: '레스토랑' },
+    { src: IMG + '2026/06/YOCASTAND_terrace_490x323.jpg', cap: '요카스탠드 테라스' },
+    { src: IMG + '2026/02/Seaside-Momochi-Beach-Park-1568x1045.jpg', cap: '시사이드 모모치 해변공원' },
+    { src: IMG + '2026/02/Fukuoka-Tower-1568x1045.jpg', cap: '후쿠오카 타워' }
+  ]
+};
 
 const ROOMS = [
-  { g: '아이 동반 가족', r: '디럭스 트윈 (3인용)', m: '성인2 · 5살 · 영아 / 영아는 무릎·유아용 침대 여부 호텔에 확인' },
-  { g: '부부', r: '슈페리어 트윈', m: '우리 부부' },
-  { g: '시부모님', r: '슈페리어 트윈', m: '시부모님' },
-  { g: '삼촌', r: '유니버설 트윈', m: '배리어프리 · 엘리베이터 가까운 방 요청' }
+  { name: '슈페리어 트윈', count: 3, guests: '부부 · 시부모님 · 삼촌',
+    desc: '모모치 해변의 시시각각 변하는 바다와 하늘 풍경을 즐길 수 있는 오션뷰 객실.',
+    img: IMG + '2026/06/superior-twin_1920x900.jpg',
+    tip: '삼촌 객실은 저층 · 엘리베이터 가까운 방, 욕실 턱 확인을 호텔에 요청하세요.' },
+  { name: '디럭스 트윈 (3인용)', count: 1, guests: '우현/이현 가족',
+    desc: '눈앞에 펼쳐진 바다와 모모치 백사장이 내려다보이는 넓은 객실.',
+    img: IMG + '2026/06/deluxe-twin_trimming_1920x900.jpg',
+    tip: '영아용 침대(베이비 베드) 대여 가능 여부를 호텔에 문의하세요.' }
+];
+
+const LUNCH = [
+  { n: '하마카츠 (Hamakatsu)', k: '돈카츠', p: '1인 약 1,500~2,500엔', d: '모모치 해변 일대 돈카츠 전문점(트립어드바이저 기준 숙소 인근 약 200m대). 정식이라 아이도 먹기 편함.' },
+  { n: '포타마 모모치하마 (Potama)', k: '구이 · 건강식', p: '1인 약 1,500~3,000엔', d: '구이 · 건강식 위주로 트립어드바이저 평점 4.9. 부모님 식사로 무난.' },
+  { n: '유히쇼쿠도', k: '수제 햄버거', p: '1인 약 1,200~2,000엔', d: '직접 만든 수제 햄버거. 해변 석양을 본 뒤 들르는 코스로 소개된 곳(마이리얼트립 커뮤니티).' },
+  { n: '마크이즈 모모치 식당가', k: '쇼핑몰 · 다양한 메뉴', p: '1인 약 1,000~2,500엔', d: '9명이 한 번에 앉기 어려울 때 대안. 엘리베이터 · 평지라 삼촌 이동도 편함.' }
 ];
 
 /* ===================== 예산 기본값 ===================== */
 const DEFAULT_BUDGET = {
-  rate: 930, people: 9, perPerson: 1000000, reserve: 5, hotel: 'prince',
+  rate: 930, people: 9, perPerson: 1000000, reserve: 5,
   items: [
-    { id: 'fl_a', cat: '항공', label: '항공권 성인·아동 (왕복)', cur: 'KRW', price: 550000, qty: 8 },
-    { id: 'fl_i', cat: '항공', label: '항공권 영아 (왕복, 추정)', cur: 'KRW', price: 100000, qty: 1 },
-    { id: 'ht', cat: '숙소', label: '프린스 호텔 4실 × 2박 (총 360만원 확정 견적, 객실·박당 평균)', cur: 'KRW', price: 450000, qty: 8 },
-    { id: 'tr_1', cat: '교통', label: '1일차 택시 3대 (공항→호텔, 시내 구경, 저녁)', cur: 'JPY', price: 22000, qty: 1 },
-    { id: 'tr_2', cat: '교통', label: '2일차 버스 투어 (마이리얼트립, 9명)', cur: 'KRW', price: 400000, qty: 1 },
-    { id: 'tr_2b', cat: '교통', label: '2일차 택시 3대 (호텔↔하카타역 왕복)', cur: 'JPY', price: 17000, qty: 1 },
-    { id: 'tr_3', cat: '교통', label: '3일차 전용 밴 3시간 (점심·공항)', cur: 'JPY', price: 24000, qty: 1 },
-    { id: 'fd_a', cat: '식비', label: '식비 성인 (3일)', cur: 'JPY', price: 15000, qty: 7 },
-    { id: 'fd_c', cat: '식비', label: '식비 아이 (3일)', cur: 'JPY', price: 6000, qty: 1 },
-    { id: 'ac_1', cat: '관광', label: '입장료 · 간식 · 기념품', cur: 'JPY', price: 10000, qty: 1 },
-    { id: 'ms_1', cat: '기타', label: '여행자보험 · eSIM (1인)', cur: 'KRW', price: 25000, qty: 9 }
+    { id: 'p_fl', paid: true, cat: '항공', label: '항공권 9명 왕복 (결제 완료)', cur: 'KRW', price: 4330000, qty: 1 },
+    { id: 'p_ht', paid: true, cat: '숙소', label: '프린스 호텔 4실 2박 (결제 완료)', cur: 'KRW', price: 3550000, qty: 1 },
+    { id: 'p_tour', paid: true, cat: '관광', label: '2일차 버스 투어 패키지 (결제 완료)', cur: 'KRW', price: 380000, qty: 1 },
+
+    { id: 'tx1', cat: '택시', label: '1일차 공항 → 숙소 택시 (대당)', cur: 'JPY', price: 5000, qty: 2 },
+    { id: 'tx2', cat: '택시', label: '2일차 숙소 → 하카타역 집결지 (대당)', cur: 'JPY', price: 3500, qty: 2 },
+    { id: 'tx3', cat: '택시', label: '2일차 하카타역 → 숙소 귀가 (대당)', cur: 'JPY', price: 3500, qty: 2 },
+    { id: 'tx4', cat: '택시', label: '3일차 숙소 → 공항 택시 (대당)', cur: 'JPY', price: 5000, qty: 2 },
+
+    { id: 'f1', cat: '식비', label: '1일차 점심 (1인)', cur: 'JPY', price: 2300, qty: 8 },
+    { id: 'f2', cat: '식비', label: '1일차 저녁 (1인)', cur: 'JPY', price: 3800, qty: 8 },
+    { id: 'f3', cat: '식비', label: '2일차 아침 (1인, 간단히)', cur: 'JPY', price: 1000, qty: 8 },
+    { id: 'f4', cat: '식비', label: '2일차 점심 (유후인 자유식, 1인)', cur: 'JPY', price: 2500, qty: 8 },
+    { id: 'f5', cat: '식비', label: '2일차 저녁 (하카타, 1인)', cur: 'JPY', price: 4000, qty: 8 },
+    { id: 'f6', cat: '식비', label: '3일차 아침 (1인)', cur: 'JPY', price: 2000, qty: 8 },
+    { id: 'f7', cat: '식비', label: '3일차 점심 (1인)', cur: 'JPY', price: 2300, qty: 8 },
+    { id: 'f8', cat: '식비', label: '카페 3회 (1인 1회, 음료 + 디저트)', cur: 'JPY', price: 1300, qty: 24 },
+
+    { id: 'ac', cat: '기타', label: '입장료 · 간식 · 기념품', cur: 'JPY', price: 10000, qty: 1 },
+    { id: 'ms', cat: '기타', label: '여행자보험 · eSIM (1인, 가입 전이면)', cur: 'KRW', price: 25000, qty: 9 }
   ]
 };
 
 const CHECKS = [
-  { group: '지금 바로 (10월 초)', items: [
-    { id: 'c_flight', t: '에어서울 RS433 · 이스타 ZE648 9명 예약 (영아는 성인 무릎 탑승)', who: '총무' },
+  { group: '예약 완료 ✓', items: [
+    { id: 'c_flight', t: '항공권 9명 예약 확정 (11/20 TW 10:10 · 11/22 ZE 15:20)', who: '총무', done: true },
+    { id: 'c_hotel', t: '프린스 호텔 4실 2박 예약 (슈페리어 트윈 3 · 디럭스 트윈 1)', who: '총무', done: true },
+    { id: 'c_tour', t: '11/21 마이리얼트립 버스 투어 9명 예약', who: '총무', done: true }
+  ]},
+  { group: '지금 할 일', items: [
     { id: 'c_wheel', t: '삼촌 휠체어 서비스 두 항공사에 각각 신청', who: '총무' },
-    { id: 'c_hotel', t: '프린스 호텔 4실 예약 (디럭스 트윈 1 · 슈페리어 트윈 2 · 유니버설 트윈 1, 총 360만원) · 영아 유아용 침대 요청', who: '총무' },
-    { id: 'c_tour', t: '11/21 마이리얼트립 버스 투어 9명 예약 · 버스 계단 높이와 승하차 도움 가능 여부 문의', who: '총무' },
-    { id: 'c_van', t: '11/22 공항행 전용 밴 3시간 예약 (카시트 2개 요청)', who: '총무' }
+    { id: 'c_bus', t: '버스 투어 업체(펀트립)에 삼촌 승하차 도움 · 계단 높이 문의', who: '총무' },
+    { id: 'c_hroom', t: '호텔에 요청: 삼촌 객실 저층 · 엘리베이터 근처, 영아 침대, 체크인 전 짐 보관', who: '총무' },
+    { id: 'c_bag', t: '두 항공사 위탁수하물 · 유모차 규정 확인', who: '아이 동반 가족' }
   ]},
   { group: '출발 2~3주 전', items: [
-    { id: 'c_bag', t: '두 항공사 위탁수하물 · 유모차 규정 확인', who: '아이 동반 가족' },
-    { id: 'c_taxi', t: '11/20 공항 택시: 큰 차(JPN · 점보 택시) 요청 방법 · NearMe 정액 전세 비교', who: '총무' },
+    { id: 'c_taxi', t: '택시 2대 배분 정하기 (4명씩 + 영아 무릎), 큰 짐은 JPN · 점보 택시 요청', who: '가족 회의' },
     { id: 'c_seatp', t: '휴대용 카시트 또는 아기띠 준비 (택시용)', who: '아이 동반 가족' },
-    { id: 'c_tour2', t: '투어 미팅 장소 확인: 하카타역 치쿠시구치 로손 오리엔탈 호텔 앞 (07:40~07:55)', who: '총무' },
-    { id: 'c_dinner', t: '1일차 저녁(마리존 일대) · 2일차 저녁(하카타역 주변) 테이블석 식당 예약', who: '부부' },
+    { id: 'c_dinner', t: '1일차 · 2일차 저녁 식당 테이블석 예약', who: '부부' },
     { id: 'c_ins', t: '여행자보험 가입 (9명)', who: '각자' }
   ]},
   { group: '출발 1주 전', items: [
     { id: 'c_vjw', t: 'Visit Japan Web 입국 정보 등록 (전원, 영아 포함)', who: '각자' },
     { id: 'c_esim', t: 'eSIM 또는 로밍 준비', who: '각자' },
     { id: 'c_yen', t: '엔화 현금 준비 (택시 · 식당 · 작은 가게용)', who: '각자' },
-    { id: 'c_early', t: '11/20 새벽 공항 이동 방법 정하기 (06:10 T1 집결)', who: '각자' },
+    { id: 'c_early', t: '11/20 인천공항 07:20 집결 — 이동 방법 정하기', who: '각자' },
     { id: 'c_help', t: '2일차 삼촌 버스 승하차 부축 담당 정하기 (어른 2명)', who: '가족 회의' }
   ]},
   { group: '짐 싸기', items: [
-    { id: 'c_baby', t: '기저귀 · 분유/이유식 · 아기 해열제 · 체온계 (2일차 버스 이동용 여분 포함)', who: '아이 동반 가족' },
+    { id: 'c_baby', t: '기저귀 · 분유/이유식 · 아기 해열제 · 체온계 (2일차 버스용 여분 포함)', who: '아이 동반 가족' },
     { id: 'c_stroll', t: '접이식 유모차', who: '아이 동반 가족' },
     { id: 'c_med', t: '상비약 · 부모님/삼촌 복용약 (영문 처방전), 멀미약', who: '각자' },
-    { id: 'c_cloth', t: '가벼운 겉옷 (11월 말 후쿠오카 10~17℃, 유후인은 더 쌀쌀)', who: '각자' },
+    { id: 'c_cloth', t: '가벼운 겉옷 (11월 말 후쿠오카 10~17℃, 해변은 바람)', who: '각자' },
     { id: 'c_cane', t: '삼촌 지팡이 · 미끄럼 방지 신발 (벳부 지옥온천 바닥 젖음)', who: '삼촌' }
   ]}
 ];
@@ -496,9 +567,10 @@ function drop(key) { try { localStorage.removeItem(STORE + key); } catch (e) {} 
 
 const clone = o => JSON.parse(JSON.stringify(o));
 let checkState = load('checklist') || {};
+CHECKS.forEach(g => g.items.forEach(it => { if (it.done && !(it.id in checkState)) checkState[it.id] = true; }));
 let budget = (function () {
   const b = load('budget');
-  return (b && b.items && b.v === 4) ? b : Object.assign(clone(DEFAULT_BUDGET), { v: 4 });
+  return (b && b.items && b.v === 5) ? b : Object.assign(clone(DEFAULT_BUDGET), { v: 5 });
 })();
 
 /* ===================== 유틸 ===================== */
@@ -571,9 +643,21 @@ function renderDaySwitch() {
   document.getElementById('daySwitch').innerHTML = DAYS.map((d, i) =>
     `<button data-i="${i}" class="${i === currentDay ? 'on' : ''}">${d.label} · ${d.date}</button>`).join('');
 }
+function tourCard(t) {
+  return `<div class="card tour">
+    <h3>🚌 ${esc(t.name)}</h3>
+    <div class="kv"><span>집결</span><b>${esc(t.meet)}</b></div>
+    <div class="kv"><span>업체</span><b>${esc(t.vendor)}</b></div>
+    <div class="kv"><span>현지 연락처</span><a href="tel:${esc(t.phone.replace(/[^+0-9]/g, ''))}">${esc(t.phone)}</a></div>
+    <div class="kv"><span>카카오톡 ID</span><b>${esc(t.kakao)}</b></div>
+    <div class="kv"><span>이메일</span><a href="mailto:${esc(t.email)}">${esc(t.email)}</a></div>
+    <div class="kv"><span>비상 연락처</span><a href="tel:${esc(t.emergency.replace(/[^+0-9]/g, ''))}">${esc(t.emergency)}</a></div>
+    <div class="note">${esc(t.note)}</div>
+  </div>`;
+}
 function renderDay() {
   const d = DAYS[currentDay];
-  document.getElementById('dayView').innerHTML = `
+  document.getElementById('dayView').innerHTML = (d.tour ? tourCard(d.tour) : '') + `
     <div class="card">
       <div class="day-head"><h3>${esc(d.title)}</h3><span class="date">${esc(d.date)}</span></div>
       <ul class="timeline">
@@ -597,25 +681,49 @@ document.getElementById('daySwitch').addEventListener('click', function (e) {
 
 /* ===================== 항공 ===================== */
 function renderFlights() {
-  document.getElementById('flightTable').innerHTML =
-    `<thead><tr><th>구분</th><th>날짜</th><th>항공사</th><th>편명</th><th>구간</th><th>출발</th><th>도착</th></tr></thead><tbody>` +
-    FLIGHTS.map(f => `<tr class="pick"><td><b>${esc(f.dir)}</b></td><td>${esc(f.date)}</td><td>${esc(f.al)}</td>
-      <td>${esc(f.no)}</td><td>${esc(f.route)}</td><td><b>${esc(f.dep)}</b></td><td>${esc(f.arr)}</td></tr>`).join('') +
-    `</tbody>`;
+  document.getElementById('flightCards').innerHTML = FLIGHTS.map(f => `
+    <div class="card flight" style="border-left:5px solid ${f.color}">
+      <div class="f-head"><b>${esc(f.dir)}</b><span class="ok-badge">예약확정</span></div>
+      <div class="f-date">${esc(f.date)}</div>
+      <div class="f-route"><span>${esc(f.from)}</span><i>→</i><span>${esc(f.to)}</span></div>
+      <div class="f-times"><div><span class="k">출발</span><b>${esc(f.dep)}</b></div><div><span class="k">도착</span><b>${esc(f.arr)}</b></div></div>
+      <div class="small muted">${esc(f.al)} · 편명 ${esc(f.no)} · 탑승 ${f.pax}명</div>
+    </div>`).join('');
 }
 
 /* ===================== 숙소 ===================== */
+function photo(src, cap) {
+  return `<figure class="ph"><img src="${esc(src)}" alt="${esc(cap)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').style.display='none'"><figcaption>${esc(cap)}</figcaption></figure>`;
+}
 function renderHotels() {
-  document.getElementById('hotelGrid').innerHTML = HOTELS.map(h => `
+  const H = HOTEL;
+  document.getElementById('hotelGrid').innerHTML = `
     <div class="card hotel">
-      <div class="top"><h3>${esc(h.name)}</h3></div>
-      <div class="small muted">${esc(h.area)}</div>
-      <div class="small" style="margin-top:6px"><b>요금</b> ${esc(h.priceText)}</div>
-      <ul class="small pros">${h.pros.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
-      <ul class="small cons">${h.cons.map(p => `<li>${esc(p)}</li>`).join('')}</ul>
-      ${h.pick ? `<div class="small" style="margin-top:10px"><b>객실 배정 (4실)</b></div>
-        <div class="rooms">${ROOMS.map(r => `<div class="room"><b>${esc(r.g)} · ${esc(r.r)}</b>${esc(r.m)}</div>`).join('')}</div>` : ''}
-    </div>`).join('');
+      <h3>${esc(H.name)}</h3>
+      <div class="small muted">${esc(H.jp)} · ${esc(H.addr)}</div>
+      <p class="small">${esc(H.intro)}</p>
+      <div class="facts">${H.facts.map(f => `<div class="kv"><span>${esc(f[0])}</span><b>${esc(f[1])}</b></div>`).join('')}</div>
+      <div class="kv"><span>호텔 연락처</span><a href="tel:${esc(H.tel.replace(/[^+0-9]/g, ''))}">${esc(H.tel)}</a></div>
+      <div class="photo-grid">${H.photos.map(p => photo(p.src, p.cap)).join('')}</div>
+      <div class="small muted">사진 출처: <a href="${esc(H.site)}" target="_blank" rel="noopener">호텔 공식 사이트</a>. 실제와 다를 수 있어요.</div>
+    </div>
+    <h3 class="sec">예약한 객실 (4실 · 2박)</h3>
+    ${ROOMS.map(r => `
+      <div class="card room-card">
+        ${photo(r.img, r.name)}
+        <div class="rc-body">
+          <h3>${esc(r.name)} × ${r.count}실</h3>
+          <div class="small"><b>투숙:</b> ${esc(r.guests)}</div>
+          <p class="small">${esc(r.desc)}</p>
+          <div class="access">${esc(r.tip)}</div>
+        </div>
+      </div>`).join('')}
+    <h3 class="sec">점심 추천 (숙소 근처 · 체크인 전 / 마지막 날)</h3>
+    <div class="card">
+      ${LUNCH.map(l => `<div class="lunch"><div><b>${esc(l.n)}</b> <span class="tag eat">${esc(l.k)}</span></div>
+        <div class="small muted">${esc(l.p)}</div><div class="small">${esc(l.d)}</div></div>`).join('')}
+      <div class="note">가격대는 대략적인 추정이고, 영업시간 · 휴무 · 예약 여부는 가기 전에 지도 앱에서 확인하세요. 9명은 2팀으로 나눠 앉아도 좋아요.</div>
+    </div>`;
 }
 
 /* ===================== 예산 ===================== */
@@ -629,33 +737,42 @@ function renderBudgetTable() {
   document.getElementById('people').value = budget.people;
   document.getElementById('perPerson').value = budget.perPerson;
   document.getElementById('reserve').value = budget.reserve;
-  document.getElementById('budgetTable').innerHTML =
-    `<thead><tr><th>구분</th><th>항목</th><th class="num">단가</th><th class="num">수량</th><th class="num">원화 합계</th></tr></thead><tbody>` +
-    budget.items.map((it, i) => `<tr>
+  let rows = '', last = null;
+  budget.items.forEach((it, i) => {
+    const grp = it.paid ? '이미 결제한 비용' : '앞으로 쓸 비용 (예상)';
+    if (grp !== last) { rows += `<tr class="grp"><td colspan="5">${grp}</td></tr>`; last = grp; }
+    rows += `<tr>
       <td class="small muted">${esc(it.cat)}</td>
       <td>${esc(it.label)}</td>
-      <td class="num"><input type="number" data-i="${i}" data-f="price" value="${it.price}" step="1000"> <span class="small muted">${it.cur === 'JPY' ? '엔' : '원'}</span></td>
+      <td class="num"><input type="number" data-i="${i}" data-f="price" value="${it.price}" step="${it.cur === 'JPY' ? 100 : 1000}"> <span class="small muted">${it.cur === 'JPY' ? '엔' : '원'}</span></td>
       <td class="num"><input type="number" class="qty" data-i="${i}" data-f="qty" value="${it.qty}" step="1"></td>
-      <td class="num" id="sum-${i}"></td></tr>`).join('') +
-    `<tr><td></td><td class="muted">예비비 (${budget.reserve}%)</td><td></td><td></td><td class="num" id="sum-reserve"></td></tr>
+      <td class="num" id="sum-${i}"></td></tr>`;
+  });
+  document.getElementById('budgetTable').innerHTML =
+    `<thead><tr><th>구분</th><th>항목</th><th class="num">단가</th><th class="num">수량</th><th class="num">원화 합계</th></tr></thead><tbody>` + rows +
+    `<tr><td></td><td class="muted">예비비 (앞으로 비용의 ${budget.reserve}%)</td><td></td><td></td><td class="num" id="sum-reserve"></td></tr>
      <tr><td></td><td><b>합계</b></td><td></td><td></td><td class="num"><b id="sum-total"></b></td></tr></tbody>`;
   recalc();
 }
 function recalc() {
-  let sub = 0; const byCat = {};
+  let paid = 0, est = 0; const byCat = {};
   budget.items.forEach((it, i) => {
-    const v = itemWon(it); sub += v;
+    const v = itemWon(it);
+    if (it.paid) paid += v; else est += v;
     byCat[it.cat] = (byCat[it.cat] || 0) + v;
     const cell = document.getElementById('sum-' + i); if (cell) cell.textContent = won(v);
   });
-  const reserve = sub * budget.reserve / 100;
-  const total = sub + reserve;
+  const reserve = est * budget.reserve / 100;
+  const rest = est + reserve;
+  const total = paid + rest;
   const limit = budget.perPerson * budget.people;
   const per = total / Math.max(1, budget.people);
   const left = limit - total;
   document.getElementById('sum-reserve').textContent = won(reserve);
   document.getElementById('sum-total').textContent = won(total);
   document.getElementById('summary').innerHTML = `
+    <div class="stat"><div class="k">이미 결제</div><div class="v">${manwon(paid)}</div></div>
+    <div class="stat"><div class="k">앞으로 예상 (예비비 포함)</div><div class="v">${manwon(rest)}</div></div>
     <div class="stat"><div class="k">총 예상 경비</div><div class="v">${manwon(total)}</div></div>
     <div class="stat ${per <= budget.perPerson ? 'ok' : 'over'}"><div class="k">1인 평균 (${budget.people}명 균등)</div><div class="v">${manwon(per)}</div></div>
     <div class="stat ${left >= 0 ? 'ok' : 'over'}"><div class="k">전체 예산 ${manwon(limit)} 대비</div><div class="v">${left >= 0 ? '여유 ' : '초과 '}${manwon(Math.abs(left))}</div></div>`;
@@ -679,7 +796,7 @@ document.getElementById('budgetTable').addEventListener('input', function (e) {
   });
 });
 document.getElementById('resetBudget').addEventListener('click', function () {
-  budget = Object.assign(clone(DEFAULT_BUDGET), { v: 4 });
+  budget = Object.assign(clone(DEFAULT_BUDGET), { v: 5 });
   drop('budget'); renderBudgetTable();
   const el = document.getElementById('savedMsg'); el.textContent = '기본값으로 되돌림';
   setTimeout(() => { el.textContent = ''; }, 2500);
