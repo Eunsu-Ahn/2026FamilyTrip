@@ -223,8 +223,11 @@
   .kv { display: grid; grid-template-columns: 92px 1fr; gap: 8px; font-size: 13.5px; padding: 5px 0; border-top: 1px dashed var(--line); }
   .kv span { color: var(--muted); }
   .kv a { color: var(--sea); font-weight: 700; text-decoration: none; word-break: break-all; }
-  .lunch { padding: 8px 0; border-top: 1px dashed var(--line); }
-  .lunch:first-child { border-top: none; }
+  .rest-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin: 10px 0; }
+  .rest { padding: 0; overflow: hidden; }
+  .rest figure.ph { border-radius: 0; }
+  .rest-body { padding: 12px 14px; display: grid; gap: 4px; }
+  .rest .mapbtn { justify-self: start; margin-top: 6px; text-decoration: none; display: inline-block; }
   .tour { border-left: 5px solid var(--sun); }
   tr.grp td { background: var(--sea-soft); color: #164e63; font-weight: 700; font-size: 13px; }
   .flight .f-head { display: flex; justify-content: space-between; align-items: center; }
@@ -400,7 +403,7 @@ const DAYS = [
       { t: '13:10', h: '숙소 도착 · 짐 맡기기', tag: 'rest', d: '체크인은 아직 전. 프런트에 짐 보관을 부탁하세요.',
         a: '짐 보관 가능 여부는 미리 호텔(+81-92-400-1806)에 문의' },
       { t: '13:30', h: '점심 · 숙소 근처 식당', tag: 'eat',
-        d: '체크인 전 가볍게 점심. 아래 「점심 추천」 참고 (돈카츠 · 구이 · 수제 햄버거).',
+        d: '체크인 전 가볍게 점심. 숙소 탭의 「숙소 근처 식당」 참고.',
         a: '식당은 도보 거리. 삼촌 이동이 힘들면 가까운 곳으로' },
       { t: '14:40', h: '호텔 앞 모모치 해변 · 후쿠오카 타워 산책', tag: 'see',
         d: '체크인을 기다리며 해변 데크를 천천히 걷기.',
@@ -450,12 +453,12 @@ const DAYS = [
         d: '호텔 앞 해변 데크 산책. 타워 전망대는 엘리베이터로 올라감 (선택).',
         a: '해변 데크는 평지. 모래사장은 삼촌 동선에서 제외' },
       { t: '11:00', h: '체크아웃 · 짐 정리', tag: 'rest', d: '체크아웃 시간은 호텔에 확인. 큰 짐은 프런트에 맡기고 점심 먹으러 가도 됨.' },
-      { t: '11:20', h: '점심 · 숙소 근처 식당', tag: 'eat', d: '마지막 식사. 아래 「점심 추천」 참고.' },
+      { t: '11:20', h: '점심 · 숙소 근처 식당', tag: 'eat', d: '마지막 식사. 숙소 탭의 「숙소 근처 식당」 참고.' },
       { t: '12:30', h: '택시 2대 → 공항 국제선 (약 25~30분)', tag: 'move', d: '' },
-      { t: '13:10', h: '공항 도착 · 수속', tag: 'move',
+      { t: '13:10', h: '후쿠오카공항 국제선 터미널 도착 · 수속', tag: 'move',
         d: '단체 + 이현이 동반이라 출발 2시간 전 도착. 면세점 이용.' },
-      { t: '15:20', h: '후쿠오카 출발 (이스타항공 ZE648)', tag: 'move', d: '' },
-      { t: '16:50', h: '인천 도착 (예상)', tag: 'move', d: '' }
+      { t: '15:20', h: '후쿠오카 국제선 터미널 출발 (이스타항공 ZE648)', tag: 'move', d: '' },
+      { t: '16:50', h: '인천공항 제1터미널(T1) 도착 (예상)', tag: 'move', d: '' }
     ]
   }
 ];
@@ -463,9 +466,9 @@ const DAYS = [
 /* ===================== 항공 (예약 확정) ===================== */
 const FLIGHTS = [
   { dir: '가는 편', date: '2026.11.20 (금)', al: '트리니티항공 (구 티웨이항공)', no: 'TW201',
-    from: '인천 (ICN)', to: '후쿠오카 (FUK)', dep: '10:10', arr: '11:35 (예상)', pax: 9, color: '#1f6f8b' },
+    from: '인천 (ICN) 제1터미널', to: '후쿠오카 (FUK) 국제선', dep: '10:10', arr: '11:35 (예상)', pax: 9, color: '#1f6f8b' },
   { dir: '오는 편', date: '2026.11.22 (일)', al: '이스타항공', no: 'ZE648',
-    from: '후쿠오카 (FUK)', to: '인천 (ICN)', dep: '15:20', arr: '16:50 (예상)', pax: 9, color: '#e08a3c' }
+    from: '후쿠오카 (FUK) 국제선', to: '인천 (ICN) 제1터미널', dep: '15:20', arr: '16:50 (예상)', pax: 9, color: '#e08a3c' }
 ];
 
 /* ===================== 숙소 ===================== */
@@ -506,11 +509,136 @@ const ROOMS = [
     tip: '이현이용 침대(베이비 베드) 대여 가능 여부를 호텔에 문의하세요.' }
 ];
 
-const LUNCH = [
-  { n: '하마카츠 (Hamakatsu)', k: '돈카츠', p: '1인 약 1,500~2,500엔', d: '모모치 해변 일대 돈카츠 전문점(트립어드바이저 기준 숙소 인근 약 200m대). 정식이라 아이도 먹기 편함.' },
-  { n: '포타마 모모치하마 (Potama)', k: '구이 · 건강식', p: '1인 약 1,500~3,000엔', d: '구이 · 건강식 위주로 트립어드바이저 평점 4.9. 부모님 식사로 무난.' },
-  { n: '유히쇼쿠도', k: '수제 햄버거', p: '1인 약 1,200~2,000엔', d: '직접 만든 수제 햄버거. 해변 석양을 본 뒤 들르는 코스로 소개된 곳(마이리얼트립 커뮤니티).' },
-  { n: '마크이즈 모모치 식당가', k: '쇼핑몰 · 다양한 메뉴', p: '1인 약 1,000~2,500엔', d: '9명이 한 번에 앉기 어려울 때 대안. 엘리베이터 · 평지라 삼촌 이동도 편함.' }
+const RESTAURANTS = [
+ {
+  "n": "梅の花 百道店",
+  "k": "두부 · 유바 가이세키",
+  "r": "Tabelog 3.13 (61건) · 트립어드바이저 4.2 (32건)",
+  "p": "점심 약 2,000~3,000엔 / 저녁 약 4,000~5,000엔",
+  "g": "113석, 다다미·테이블 혼합. 2~20인 개인실, 단체 40명까지 예약 가능. 부드러운 두부 요리라 부모님·아이 모두 편함.",
+  "q": "梅の花 百道店 福岡市早良区百道浜1-3-14",
+  "img": "https://tblg.k-img.com/resize/640x640c/restaurant/images/Rvw/332087/08e439f7f44701dc7742ebc68c495395.jpg?token=b16c212&api=v2"
+ },
+ {
+  "n": "YOCATERRACE (호텔 내 레스토랑)",
+  "k": "프렌치 베이스 올데이 다이닝",
+  "r": "2026.3 신규 오픈 · 평점 정보 없음",
+  "p": "점심·조식 하프 뷔페 3,600엔~ / 저녁 코스 6,000엔~",
+  "g": "호텔 4층이라 이동이 가장 편함(엘리베이터). 개인실은 없음. 예약: 092-400-2138.",
+  "q": "ヨカテラス 福岡プリンスホテル モモチハマ 福岡市早良区百道浜2-3-23",
+  "img": "https://www.princehotels.co.jp/momochihama/images/res_yoca_header.jpg"
+ },
+ {
+  "n": "돈카츠 하마카츠 후쿠오카 모모치점",
+  "k": "돈카츠",
+  "r": "Tabelog 3.07 (64건) · 트립어드바이저 3.8 (42건)",
+  "p": "1인 약 1,000~2,000엔",
+  "g": "74석, 10~20인 개인실. 주차장 110면. 메뉴가 무난해 아이·어르신 식사로 좋음. 층·계단 여부는 예약 시 확인.",
+  "q": "とんかつ濱かつ 福岡百道店 福岡市早良区百道浜1-3-70"
+ },
+ {
+  "n": "mamma-mia (마리존 내)",
+  "k": "이탈리안 · 피자",
+  "r": "트립어드바이저 약 4점대 (3.9~4.1, 소수 리뷰)",
+  "p": "1인 약 3,000엔",
+  "g": "120석으로 9명 한 번에 앉기 좋음. 화요일 휴무. 예약: 092-832-3353. 해변 바로 앞 마리존 건물.",
+  "q": "マンマミーア Seaside Peaceful Restaurant 福岡市早良区百道浜2-902-1 マリゾン",
+  "img": "https://nasse.com/fukuoka/image/index/newimages/2249/b20150528_1.jpg/1200"
+ },
+ {
+  "n": "포~타마 (Po-tama) 모모치하마점",
+  "k": "오니기리 · 계란 · 가벼운 식사",
+  "r": "Tabelog 3.05 (33건) · 트립어드바이저 4.9 (13건)",
+  "p": "1인 1,000엔 미만",
+  "g": "캐주얼 가게라 9명 동시 착석은 어려움. 포장해서 호텔 방에서 먹기 좋음. 08:00~19:00.",
+  "q": "ポーたま ももち浜店 福岡市早良区百道浜2-3-2 TNC放送会館1F",
+  "img": "https://porktamago.com/wp2025/wp-content/uploads/2025/03/01_potama_momochihama_0015.webp"
+ },
+ {
+  "n": "다이메이 탄탄멘 TNC파벨리아점",
+  "k": "사천식 탄탄면",
+  "r": "Tabelog 3.35 (97건) · 트립어드바이저 3.8 (11건)",
+  "p": "1인 1,000엔 미만",
+  "g": "15석뿐이라 2~3팀으로 나눠 앉아야 함. 1층이라 계단 없음. 빠르게 먹는 점심용.",
+  "q": "大明担担麺 TNCパヴェリア店 福岡市早良区百道浜2-3-2",
+  "img": "https://tblg.k-img.com/resize/640x640c/restaurant/images/Rvw/340247/194ae3256351f22736862c94a0490271.jpg?token=4685714&api=v2"
+ },
+ {
+  "n": "카페 오토 (CAFFE OTTO) 모모치하마",
+  "k": "카페 · 가벼운 식사",
+  "r": "Tabelog 3.25 (40건)",
+  "p": "1인 약 1,000~2,000엔",
+  "g": "98석, 1층 무단차(휠체어 가능). 20인 이상은 대관 가능. 예약: 092-836-5945.",
+  "q": "カフェ オットー モモチハマ 福岡市早良区百道浜2-3-2 TNC会館1F"
+ },
+ {
+  "n": "렌가 클럽 (Renga Club)",
+  "k": "양식 · 샌드위치 · 카페",
+  "r": "Tabelog 3.09 (23건)",
+  "p": "1인 1,000엔 미만 (런치 780엔)",
+  "g": "1층, 4인 / 10~20인 / 20~30인 개인실이 있어 9명에 가장 적합한 편. 예약: 092-400-0561. 11:00~20:00.",
+  "q": "煉瓦倶楽部 福岡タワー 福岡市早良区百道浜2-3-26"
+ },
+ {
+  "n": "스카이 라운지 르푸지 (후쿠오카 타워 4층)",
+  "k": "카페 · 바",
+  "r": "Tabelog 3.27 (72건) · 트립어드바이저 4.2 (13건)",
+  "p": "낮 1,000엔 미만 / 저녁 1,000~2,000엔",
+  "g": "60석(테이블 50), 개인실 없음. 4층이라 엘리베이터 이용 가능 여부는 예약 시 확인. 예약: 092-833-8255.",
+  "q": "スカイラウンジ ルフージュ 福岡タワー 福岡市早良区百道浜2-3-26"
+ },
+ {
+  "n": "레스토랑 오브 (Restaurant Aube)",
+  "k": "양식 · 아시안 리조트 스타일",
+  "r": "트립어드바이저 4.5 (4건, 리뷰 적음)",
+  "p": "1인 약 1,500~2,000엔",
+  "g": "산노병원 5층, 80석, 개인실 없음. 나가하마 시장 생선 요리. 영업시간·예약은 사전 확인.",
+  "q": "レストラン オーブ 福岡市早良区百道浜3-6-45 福岡山王病院",
+  "img": "https://imgfp.hotp.jp/IMGH/36/99/P018323699/P018323699_480.jpg"
+ },
+ {
+  "n": "구룡점심 (九龍點心) – 마크이즈 3층",
+  "k": "중식 · 딤섬 뷔페",
+  "r": "Tabelog 3.41 (102건)",
+  "p": "1인 약 2,000~4,000엔",
+  "g": "104석으로 9명 앉기 편하고 뷔페라 입맛 다른 가족에게 좋음. 쇼핑몰이라 엘리베이터 있음. 예약: 092-833-8075. 숙소에서 택시 권장.",
+  "q": "九龍點心 マークイズ福岡ももち 福岡市中央区地行浜2-2-1",
+  "img": "https://tblg.k-img.com/resize/640x640c/restaurant/images/Rvw/124728/124728053.jpg?token=0d2fa7a&api=v2"
+ },
+ {
+  "n": "니시진 하츠키 (야키니쿠 · 모츠나베) – 마크이즈 3층",
+  "k": "야키니쿠 · 모츠나베",
+  "r": "Tabelog 3.36 (61건)",
+  "p": "점심 1,000~2,000엔 / 저녁 3,000~4,000엔",
+  "g": "80석, 11:00~22:00. 모츠나베 맛보기 좋음. 예약: 050-5589-8282. 좌식 여부는 예약 시 테이블석 요청.",
+  "q": "焼き肉もつ鍋 西新初喜 マークイズ福岡ももち 福岡市中央区地行浜2-2-1",
+  "img": "https://tblg.k-img.com/resize/640x640c/restaurant/images/Rvw/182611/80586ea79a497a833d3fe53fa9be0b80.jpg?token=ef8bdb5&api=v2"
+ },
+ {
+  "n": "가나자와 마이몬 스시 – 마크이즈 내",
+  "k": "회전초밥",
+  "r": "Tabelog 3.28 (213건)",
+  "p": "1인 약 1,500~3,000엔",
+  "g": "리뷰가 많은 인기 회전초밥. 아이와 먹기 편하지만 대기가 길 수 있어 오픈 직후 방문 권장. 숙소에서 택시 권장.",
+  "q": "金沢まいもん寿司 マークイズ福岡ももち 福岡市中央区地行浜2-2-1"
+ },
+ {
+  "n": "중국요리 망해루 (힐튼 후쿠오카 시호크 5층)",
+  "k": "중식 코스",
+  "r": "Tabelog 3.37 (86건) · 트립어드바이저 4.2 (64건)",
+  "p": "점심 4,000~5,000엔 / 저녁 8,000~10,000엔",
+  "g": "70석, 7~12인 개인실(A룸)이 있어 9명 단독 식사에 딱 맞음. 호텔 5층. 바다 건너 지교하마라 택시 이동.",
+  "q": "中国料理 望海楼 ヒルトン福岡シーホーク 福岡市中央区地行浜2-2-3",
+  "img": "https://tblg.k-img.com/resize/640x640c/restaurant/images/Rvw/167047/7c82f9a3dda42788b60f5124f1d3d4ab.jpg?token=493283a&api=v2"
+ },
+ {
+  "n": "브라세리 & 라운지 SEALA (힐튼 4층)",
+  "k": "호텔 뷔페",
+  "r": "Tabelog 3.40 (318건) · 트립어드바이저 3.8 (156건)",
+  "p": "점심 4,200~4,900엔 / 저녁 6,500~6,900엔 (6~12세 약 반값)",
+  "g": "좌석이 매우 넓은 뷔페라 9명 착석 걱정 없음. 예약: TableCheck 또는 092-844-8000. 지교하마라 택시 이동. 소아 요금·유아 정책은 예약 시 확인.",
+  "q": "ブラッセリー&ラウンジ シアラ ヒルトン福岡シーホーク 福岡市中央区地行浜2-2-3"
+ }
 ];
 
 /* ===================== 예산 기본값 ===================== */
@@ -738,11 +866,20 @@ function renderHotels() {
           <div class="access">${esc(r.tip)}</div>
         </div>
       </div>`).join('')}
-    <h3 class="sec">점심 추천 (숙소 근처 · 체크인 전 / 마지막 날)</h3>
-    <div class="card">
-      ${LUNCH.map(l => `<div class="lunch"><div><b>${esc(l.n)}</b> <span class="tag eat">${esc(l.k)}</span></div>
-        <div class="small muted">${esc(l.p)}</div><div class="small">${esc(l.d)}</div></div>`).join('')}
-      <div class="note">가격대는 대략적인 추정이고, 영업시간 · 휴무 · 예약 여부는 가기 전에 지도 앱에서 확인하세요. 9명은 2팀으로 나눠 앉아도 좋아요.</div>
+    <h3 class="sec">숙소 근처 식당 15곳</h3>
+    <div class="note">별점은 구글맵이 아니라 Tabelog · 트립어드바이저 기준입니다(구글 별점은 확인하지 못함). 모모치하마는 큰 식당이 적어 마크이즈·힐튼 쪽까지 포함했어요. 구글맵 버튼으로 별점·영업시간을 꼭 확인하세요. 9명은 2팀으로 나눠 앉아도 좋아요.</div>
+    <div class="rest-grid">
+      ${RESTAURANTS.map((l, i) => `<div class="card rest">
+        ${l.img ? photo(l.img, l.n) : ''}
+        <div class="rest-body">
+          <div><b>${i + 1}. ${esc(l.n)}</b> <span class="tag eat">${esc(l.k)}</span></div>
+          <div class="small"><b>평점</b> ${esc(l.r)}</div>
+          <div class="small muted">${esc(l.p)}</div>
+          <div class="small">${esc(l.g)}</div>
+          <a class="btn ghost mapbtn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.q)}">구글맵에서 보기</a>
+        </div></div>`).join('')}
+    </div>
+    <div class="small muted">가격대는 대략적인 추정입니다. 사진은 Tabelog · 각 가게/호텔 공식 페이지에서 가져온 것이라 일부는 표시되지 않을 수 있어요.</div>
     </div>`;
 }
 
@@ -794,8 +931,7 @@ function recalc() {
     <div class="stat"><div class="k">이미 결제</div><div class="v">${manwon(paid)}</div></div>
     <div class="stat"><div class="k">앞으로 예상 (예비비 포함)</div><div class="v">${manwon(rest)}</div></div>
     <div class="stat"><div class="k">총 예상 경비</div><div class="v">${manwon(total)}</div></div>
-    <div class="stat ${per <= budget.perPerson ? 'ok' : 'over'}"><div class="k">1인 평균 (${budget.people}명 균등)</div><div class="v">${manwon(per)}</div></div>
-    <div class="stat ${left >= 0 ? 'ok' : 'over'}"><div class="k">전체 예산 ${manwon(limit)} 대비</div><div class="v">${left >= 0 ? '여유 ' : '초과 '}${manwon(Math.abs(left))}</div></div>`;
+    <div class="stat"><div class="k">1인 평균 (${budget.people}명 균등)</div><div class="v">${manwon(per)}</div></div>`;
   if (reserve > 0) byCat['예비비'] = reserve;
   const max = Math.max.apply(null, Object.values(byCat).concat([1]));
   document.getElementById('bars').innerHTML = Object.keys(byCat).map(k => `
